@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MeeChain MeeBot DApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+          }
+        }
+      }
+    </script>
+    <style>
+      body { background-color: #000; color: #fff; overflow-x: hidden; }
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: #000; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react/": "https://esm.sh/react@19.0.0/",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/": "https://esm.sh/react-dom@19.0.0/",
+    "viem": "https://esm.sh/viem",
+    "viem/": "https://esm.sh/viem/",
+    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@5.66.0?external=react,react-dom",
+    "wagmi": "https://esm.sh/wagmi@2.14.11?external=react,react-dom,viem,@tanstack/react-query",
+    "zustand": "https://esm.sh/zustand@5.0.3?external=react",
+    "lucide-react": "https://esm.sh/lucide-react?external=react",
+    "framer-motion": "https://esm.sh/framer-motion?external=react,react-dom",
+    "canvas-confetti": "https://esm.sh/canvas-confetti",
+    "react-router-dom": "https://esm.sh/react-router-dom?external=react,react-dom",
+    "@react-three/drei": "https://esm.sh/@react-three/drei?external=react,react-dom,three",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber?external=react,react-dom,three",
+    "three": "https://esm.sh/three@0.182.0",
+    "vitest": "https://esm.sh/vitest@^4.0.16"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
