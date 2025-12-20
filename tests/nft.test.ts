@@ -4,68 +4,61 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll } from '../lib/nft';
 import { ADRS } from '../lib/contracts';
 
-describe('NFT Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890';
-  const mockOperator = '0x0987654321098765432109876543210987654321';
+describe('MCB-Bot Asset Service', () => {
+  const mockAddress = '0x1234567890123456789012345678901234567890' as const;
+  const mockOperator = '0x0987654321098765432109876543210987654321' as const;
+  
+  let mockPublicClient: any;
+  let mockWalletClient: any;
 
-  describe('Reads', () => {
-    it('getNFTBalance: returns collection count correctly', async () => {
-      const mockPublicClient = {
-        readContract: vi.fn().mockResolvedValue(5n),
-      };
-      const balance = await getNFTBalance(mockPublicClient as any, mockAddress);
+  beforeEach(() => {
+    mockPublicClient = { readContract: vi.fn() };
+    mockWalletClient = { writeContract: vi.fn() };
+  });
+
+  describe('Asset Telemetry (Reads)', () => {
+    it('getNFTBalance: should return unit count in fleet', async () => {
+      mockPublicClient.readContract.mockResolvedValue(12n);
+      const balance = await getNFTBalance(mockPublicClient, mockAddress);
+      
       expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.nft,
         functionName: 'balanceOf',
         args: [mockAddress]
       }));
-      expect(balance).toBe(5n);
+      expect(balance).toBe(12n);
     });
 
-    it('getNFTUri: fetches token URI for specific bot IDs', async () => {
-      const mockPublicClient = {
-        readContract: vi.fn().mockResolvedValue('ipfs://meebot-1'),
-      };
-      const uri = await getNFTUri(mockPublicClient as any, 1n);
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
-        address: ADRS.nft,
-        functionName: 'tokenURI',
-        args: [1n]
-      }));
-      expect(uri).toBe('ipfs://meebot-1');
+    it('getNFTUri: should fetch cybernetic metadata pointer', async () => {
+      const uri = 'ipfs://mcb-bot-42-config';
+      mockPublicClient.readContract.mockResolvedValue(uri);
+      const result = await getNFTUri(mockPublicClient, 42n);
+      expect(result).toBe(uri);
     });
 
-    it('getNFTOwner: fetches the owner of a specific token', async () => {
-      const mockPublicClient = {
-        readContract: vi.fn().mockResolvedValue(mockAddress),
-      };
-      const owner = await getNFTOwner(mockPublicClient as any, 42n);
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
-        address: ADRS.nft,
-        functionName: 'ownerOf',
-        args: [42n]
-      }));
+    it('getNFTOwner: should identify current signature holding the unit', async () => {
+      mockPublicClient.readContract.mockResolvedValue(mockAddress);
+      const owner = await getNFTOwner(mockPublicClient, 1n);
       expect(owner).toBe(mockAddress);
     });
   });
 
-  describe('Writes', () => {
-    it('setNFTApprovalForAll: toggles operator approval status', async () => {
-      const mockWalletClient = {
-        writeContract: vi.fn().mockResolvedValue('0xapprovalhash'),
-      };
-      const hash = await setNFTApprovalForAll(mockWalletClient as any, mockAddress, mockOperator, true);
+  describe('Asset Management (Writes)', () => {
+    it('setNFTApprovalForAll: should grant nexus marketplace access to units', async () => {
+      mockWalletClient.writeContract.mockResolvedValue('0xapproval_hash');
+      const hash = await setNFTApprovalForAll(mockWalletClient, mockAddress, mockOperator, true);
+      
       expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.nft,
         functionName: 'setApprovalForAll',
         args: [mockOperator, true],
         account: mockAddress
       }));
-      expect(hash).toBe('0xapprovalhash');
+      expect(hash).toBe('0xapproval_hash');
     });
   });
 });

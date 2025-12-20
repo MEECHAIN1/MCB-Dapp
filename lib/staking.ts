@@ -11,6 +11,15 @@ export const getEarnedRewards = async (publicClient: PublicClient, address: Addr
   });
 };
 
+export const getStakedBalance = async (publicClient: PublicClient, address: Address) => {
+  return await publicClient.readContract({
+    address: ADRS.staking as Address,
+    abi: MINIMAL_STAKING_ABI,
+    functionName: 'balanceOf',
+    args: [address],
+  });
+};
+
 export const getRewardRate = async (publicClient: PublicClient) => {
   return await publicClient.readContract({
     address: ADRS.staking as Address,

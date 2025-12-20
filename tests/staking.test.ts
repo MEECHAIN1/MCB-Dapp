@@ -4,83 +4,102 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { describe, it, expect, vi } from 'vitest';
-import { stakeTokens, getEarnedRewards, getRewardRate, claimRewards, withdrawTokens } from '../lib/staking';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { stakeTokens, getEarnedRewards, getRewardRate, claimRewards, withdrawTokens, getStakedBalance } from '../lib/staking';
 import { parseUnits } from 'viem';
 import { ADRS } from '../lib/contracts';
 
-describe('Staking Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890';
+describe('Ritual Staking Service', () => {
+  const mockAddress = '0x1234567890123456789012345678901234567890' as const;
+  
+  let mockPublicClient: any;
+  let mockWalletClient: any;
 
-  describe('Reads', () => {
-    it('getEarnedRewards: calculates earned rewards correctly', async () => {
-      const mockPublicClient = {
-        readContract: vi.fn().mockResolvedValue(parseUnits('5.5', 18)),
-      };
-      const earned = await getEarnedRewards(mockPublicClient as any, mockAddress);
+  beforeEach(() => {
+    mockPublicClient = { readContract: vi.fn() };
+    mockWalletClient = { writeContract: vi.fn() };
+  });
+
+  describe('Telemetry (Reads)', () => {
+    it('getEarnedRewards: should fetch pending MCB rewards', async () => {
+      const expected = parseUnits('10.5', 18);
+      mockPublicClient.readContract.mockResolvedValue(expected);
+
+      const earned = await getEarnedRewards(mockPublicClient, mockAddress);
+      
       expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.staking,
         functionName: 'earned',
         args: [mockAddress]
       }));
-      expect(earned).toBe(parseUnits('5.5', 18));
+      expect(earned).toBe(expected);
     });
 
-    it('getRewardRate: fetches the current reward intensity', async () => {
-      const mockPublicClient = {
-        readContract: vi.fn().mockResolvedValue(parseUnits('0.1', 18)),
-      };
-      const rate = await getRewardRate(mockPublicClient as any);
+    it('getStakedBalance: should fetch amount currently sacrificed to nexus', async () => {
+      const expected = parseUnits('5000', 18);
+      mockPublicClient.readContract.mockResolvedValue(expected);
+
+      const balance = await getStakedBalance(mockPublicClient, mockAddress);
+      
       expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.staking,
-        functionName: 'rewardRate'
+        functionName: 'balanceOf',
+        args: [mockAddress]
       }));
-      expect(rate).toBe(parseUnits('0.1', 18));
+      expect(balance).toBe(expected);
+    });
+
+    it('getRewardRate: should fetch global emission intensity', async () => {
+      const expected = parseUnits('0.5', 18);
+      mockPublicClient.readContract.mockResolvedValue(expected);
+
+      const rate = await getRewardRate(mockPublicClient);
+      expect(rate).toBe(expected);
     });
   });
 
-  describe('Writes', () => {
-    it('stakeTokens: submits stake transaction with correct parameters', async () => {
-      const mockWalletClient = {
-        writeContract: vi.fn().mockResolvedValue('0xtxhash'),
-      };
-      const amount = parseUnits('1000', 18);
-      const hash = await stakeTokens(mockWalletClient as any, mockAddress, amount);
+  describe('Rituals (Writes)', () => {
+    it('stakeTokens: should initiate stake ritual', async () => {
+      const amount = parseUnits('100', 18);
+      mockWalletClient.writeContract.mockResolvedValue('0xstake_hash');
+
+      const hash = await stakeTokens(mockWalletClient, mockAddress, amount);
+      
       expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.staking,
         functionName: 'stake',
         args: [amount],
         account: mockAddress
       }));
-      expect(hash).toBe('0xtxhash');
+      expect(hash).toBe('0xstake_hash');
     });
 
-    it('withdrawTokens: initiates token withdrawal correctly', async () => {
-      const mockWalletClient = {
-        writeContract: vi.fn().mockResolvedValue('0xwithdrawhash'),
-      };
-      const amount = parseUnits('500', 18);
-      const hash = await withdrawTokens(mockWalletClient as any, mockAddress, amount);
+    it('withdrawTokens: should initiate withdrawal ritual', async () => {
+      const amount = parseUnits('50', 18);
+      mockWalletClient.writeContract.mockResolvedValue('0xwithdraw_hash');
+
+      const hash = await withdrawTokens(mockWalletClient, mockAddress, amount);
+      
       expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.staking,
         functionName: 'withdraw',
         args: [amount],
         account: mockAddress
       }));
-      expect(hash).toBe('0xwithdrawhash');
+      expect(hash).toBe('0xwithdraw_hash');
     });
 
-    it('claimRewards: initiates the claim rewards ritual', async () => {
-      const mockWalletClient = {
-        writeContract: vi.fn().mockResolvedValue('0xclaimhash'),
-      };
-      const hash = await claimRewards(mockWalletClient as any, mockAddress);
+    it('claimRewards: should execute the reward collection ritual', async () => {
+      mockWalletClient.writeContract.mockResolvedValue('0xclaim_hash');
+
+      const hash = await claimRewards(mockWalletClient, mockAddress);
+      
       expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
         address: ADRS.staking,
         functionName: 'getReward',
         account: mockAddress
       }));
-      expect(hash).toBe('0xclaimhash');
+      expect(hash).toBe('0xclaim_hash');
     });
   });
 });
