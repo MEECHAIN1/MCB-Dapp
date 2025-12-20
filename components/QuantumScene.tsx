@@ -5,9 +5,18 @@
 */
 
 import React, { useRef, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
 import { Float, Stars, Environment, OrbitControls, Torus } from '@react-three/drei';
 import * as THREE from 'three';
+
+// Fix: Local component aliases for R3F intrinsic elements to bypass JSX namespace type resolution issues
+const Mesh = 'mesh' as any;
+const SphereGeometry = 'sphereGeometry' as any;
+const MeshBasicMaterial = 'meshBasicMaterial' as any;
+const MeshStandardMaterial = 'meshStandardMaterial' as any;
+const AmbientLight = 'ambientLight' as any;
+const PointLight = 'pointLight' as any;
+const SpotLight = 'spotLight' as any;
 
 /**
  * QuantumEffect creates a holographic pulse overlay for the central orb.
@@ -33,16 +42,16 @@ const QuantumEffect = () => {
   });
 
   return (
-    // Fix: Using standard mesh element; types are provided via global augmentation in vite-env.d.ts
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1.6, 64, 64]} />
-      <meshBasicMaterial
+    // Fix: Using local Mesh component alias for type safety
+    <Mesh ref={meshRef}>
+      <SphereGeometry args={[1.6, 64, 64]} />
+      <MeshBasicMaterial
         color="#C5A059"
         transparent
         opacity={0.3}
         wireframe
       />
-    </mesh>
+    </Mesh>
   );
 };
 
@@ -58,10 +67,10 @@ const QuantumOrb = () => {
   });
 
   return (
-    // Fix: Using standard mesh element; types are provided via global augmentation in vite-env.d.ts
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1.5, 64, 64]} />
-      <meshStandardMaterial
+    // Fix: Using local Mesh component alias for type safety
+    <Mesh ref={meshRef}>
+      <SphereGeometry args={[1.5, 64, 64]} />
+      <MeshStandardMaterial
         color="#C5A059"
         emissive="#4F46E5"
         emissiveIntensity={0.5}
@@ -69,7 +78,7 @@ const QuantumOrb = () => {
         roughness={0.1}
         wireframe
       />
-    </mesh>
+    </Mesh>
   );
 };
 
@@ -86,8 +95,8 @@ const MacroscopicWave = () => {
 
   return (
     <Torus ref={ref} args={[3, 0.02, 12, 64]} rotation={[Math.PI / 2, 0, 0]}>
-      {/* Fix: Standard R3F intrinsic material element */}
-      <meshStandardMaterial 
+      {/* Fix: Using local MeshStandardMaterial alias to avoid JSX intrinsic type errors */}
+      <MeshStandardMaterial 
         color="#C5A059" 
         emissive="#C5A059" 
         emissiveIntensity={0.4} 
@@ -108,10 +117,10 @@ export const HeroScene: React.FC = () => {
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={null}>
-          {/* Fix: R3F intrinsic light elements supported by global augmentation */}
-          <ambientLight intensity={0.4} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+          {/* Fix: Using local light component aliases to avoid JSX intrinsic type errors */}
+          <AmbientLight intensity={0.4} />
+          <PointLight position={[10, 10, 10]} intensity={1} />
+          <SpotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
           
           <Float speed={1.2} rotationIntensity={0.5} floatIntensity={0.5}>
             <QuantumOrb />

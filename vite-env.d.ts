@@ -23,7 +23,7 @@ declare global {
     readonly env: ImportMetaEnv;
   }
 
-  // Fix: Augmenting NodeJS namespace to provide types for process.env without redeclaring the global process variable to avoid block-scoped conflict
+  // Fix: Augmenting NodeJS namespace to provide types for process.env
   namespace NodeJS {
     interface ProcessEnv {
       API_KEY: string;
@@ -31,22 +31,20 @@ declare global {
     }
   }
 
-  // Fix: Augment global JSX namespace to include React Three Fiber intrinsic elements (mesh, sphereGeometry, lights, etc.)
+  // Fix: Augment global JSX namespace to include React Three Fiber intrinsic elements
   namespace JSX {
     interface IntrinsicElements extends ThreeElements {}
   }
-
-  // Fix: Support for React 18+ global JSX namespace augmentation
-  namespace React {
-    namespace JSX {
-      interface IntrinsicElements extends ThreeElements {}
-    }
-  }
 }
 
-// Fix: Augment React's JSX namespace for module-based environments to resolve "Property does not exist" errors in components
+// Fix: Augment React's JSX namespace for React 18+ to resolve "Property does not exist on type 'JSX.IntrinsicElements'"
 declare module 'react' {
   namespace JSX {
     interface IntrinsicElements extends ThreeElements {}
   }
+}
+
+// Fix: Direct augmentation for @react-three/fiber types to support merging
+declare module '@react-three/fiber' {
+  interface ThreeElements extends ThreeElements {}
 }
