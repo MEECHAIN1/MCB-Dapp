@@ -4,6 +4,7 @@ import { useAccount, useReadContract, useWatchContractEvent } from 'wagmi';
 import { ADRS, MINIMAL_NFT_ABI } from '../lib/contracts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Box, History, ExternalLink, Cpu } from 'lucide-react';
+import { useAppState } from '../context/useAppState';
 
 interface LogEntry {
   id: string;
@@ -15,6 +16,7 @@ interface LogEntry {
 
 const GalleryPage: React.FC = () => {
   const { address } = useAccount();
+  const { setLoading, setError } = useAppState();
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   // Real-time Event Subscription
@@ -32,15 +34,30 @@ const GalleryPage: React.FC = () => {
       }));
       setLogs(prev => [newLogs[0], ...prev].slice(0, 10));
     },
+    onError(err) {
+      setError("Log Stream Interrupted: " + err.message);
+    }
   });
 
-  const { data: balance } = useReadContract({
+  const { data: balance, isLoading: isNftLoading, isError, error } = useReadContract({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { enabled: !!address }
   });
+
+  // Sync loading state
+  useEffect(() => {
+    setLoading(isNftLoading);
+  }, [isNftLoading, setLoading]);
+
+  // Sync error state
+  useEffect(() => {
+    if (isError && error) {
+      setError(error.message);
+    }
+  }, [isError, error, setError]);
 
   return (
     <div className="space-y-12">
@@ -54,7 +71,7 @@ const GalleryPage: React.FC = () => {
         </div>
       </header>
 
-      {/* NFT Grid - In a real app we'd fetch actual metadata, here we mock placeholders based on count */}
+      {/* NFT Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {balance && Array.from({ length: Number(balance) }).map((_, i) => (
           <motion.div 
@@ -74,7 +91,7 @@ const GalleryPage: React.FC = () => {
             </div>
           </motion.div>
         ))}
-        {(!balance || Number(balance) === 0) && (
+        {(!balance || Number(balance) === 0) && !isNftLoading && (
           <div className="col-span-full py-20 bg-zinc-900/20 border-2 border-dashed border-zinc-800 rounded-3xl flex flex-col items-center justify-center">
             <Box size={48} className="text-zinc-700 mb-4" />
             <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest">No cybernetic assets detected</p>

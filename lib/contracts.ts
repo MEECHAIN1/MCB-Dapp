@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Fix: Use type assertion for import.meta.env to resolve missing type definition errors
 export const ADRS = {
-  nft: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  marketplace: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-  staking: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-  token: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", // Assuming MEE token or staking handles rewards
+  nft: ((import.meta as any).env?.VITE_NFT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
+  marketplace: ((import.meta as any).env?.VITE_MARKETPLACE_ADDRESS || "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
+  staking: ((import.meta as any).env?.VITE_STAKING_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
+  token: ((import.meta as any).env?.VITE_TOKEN_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, // Often same as staking or specialized ERC20
 };
 
 export const MINIMAL_ERC20_ABI = [

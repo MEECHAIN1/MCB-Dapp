@@ -11,13 +11,17 @@ import GalleryPage from './pages/GalleryPage';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 
+// Fix: Use type assertion for import.meta.env to resolve TS errors when Vite types are not detected
+const chainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 1337);
+const rpcUrl = (import.meta as any).env?.VITE_RPC_URL || 'http://127.0.0.1:9545';
+
 const meeChain = {
   ...localhost,
-  id: 1337,
-  name: 'MeeChain Local',
+  id: chainId,
+  name: (import.meta as any).env?.VITE_CHAIN_NAME || 'MeeChain',
   rpcUrls: {
-    default: { http: ['http://127.0.0.1:9545'] },
-    public: { http: ['http://127.0.0.1:9545'] },
+    default: { http: [rpcUrl] },
+    public: { http: [rpcUrl] },
   },
 };
 
@@ -37,7 +41,7 @@ const queryClient = new QueryClient();
 const GlobalManager: React.FC = () => {
   const { pathname } = useLocation();
   const { isConnected } = useAccount();
-  const chainId = useChainId();
+  const currentChainId = useChainId();
   const { setError, reset } = useAppState();
 
   // Reset error state whenever the user navigates to a different page
@@ -47,10 +51,10 @@ const GlobalManager: React.FC = () => {
 
   // Check for network mismatch and notify the user via global state
   useEffect(() => {
-    if (isConnected && chainId !== 1337) {
-      setError("Network Mismatch: Please connect to MeeChain (Chain ID: 1337)");
+    if (isConnected && currentChainId !== chainId) {
+      setError(`Network Mismatch: Please connect to the ritual chain (Chain ID: ${chainId})`);
     }
-  }, [isConnected, chainId, setError]);
+  }, [isConnected, currentChainId, setError]);
 
   return null;
 };

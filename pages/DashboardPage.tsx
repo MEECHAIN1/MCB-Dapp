@@ -1,38 +1,41 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
-import { Coins, Layers, TrendingUp, Info, Zap } from 'lucide-react';
+import { Coins, Layers, TrendingUp, Info, Zap, Shield, Binary } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
+import { useAppState } from '../context/useAppState';
 
 const StatCard = ({ title, value, unit, icon: Icon, color }: any) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-zinc-900/60 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl hover:border-yellow-500/50 transition-all group z-10"
+    whileHover={{ scale: 1.02 }}
+    className="bg-black/60 backdrop-blur-xl border border-zinc-800 p-6 rounded-2xl hover:border-yellow-500/50 transition-all group z-10"
   >
     <div className="flex justify-between items-start mb-4">
-      <div className={`p-3 rounded-xl bg-zinc-800 group-hover:scale-110 transition-transform ${color}`}>
+      <div className={`p-3 rounded-xl bg-zinc-900 group-hover:bg-zinc-800 transition-colors ${color}`}>
         <Icon size={24} />
       </div>
       <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1">
         Live <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
       </div>
     </div>
-    <h3 className="text-zinc-400 text-xs font-mono uppercase tracking-wider mb-1">{title}</h3>
+    <h3 className="text-zinc-400 text-[10px] font-mono uppercase tracking-[0.2em] mb-1">{title}</h3>
     <div className="flex items-baseline gap-2">
       <span className="text-2xl font-black text-white">{value}</span>
-      <span className="text-xs font-mono text-zinc-500">{unit}</span>
+      <span className="text-[10px] font-mono text-zinc-500 uppercase">{unit}</span>
     </div>
   </motion.div>
 );
 
 const DashboardPage: React.FC = () => {
   const { address, isConnected } = useAccount();
+  const { setLoading, setError } = useAppState();
 
-  const { data: tokenBalance } = useReadContract({
+  const { data: tokenBalance, isLoading: isTokenLoading, isError: isTokenError, error: tokenErr } = useReadContract({
     address: ADRS.token as `0x${string}`,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'balanceOf',
@@ -40,7 +43,7 @@ const DashboardPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: nftBalance } = useReadContract({
+  const { data: nftBalance, isLoading: isNftLoading } = useReadContract({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
     functionName: 'balanceOf',
@@ -55,98 +58,135 @@ const DashboardPage: React.FC = () => {
     query: { refetchInterval: 10000 }
   });
 
-  if (!isConnected) {
-    return (
-      <div className="relative flex flex-col items-center justify-center min-h-[70vh] text-center overflow-hidden">
-        <HeroScene />
-        <div className="relative z-10 p-8 bg-black/40 backdrop-blur-xl rounded-3xl border border-zinc-800">
-          <div className="w-20 h-20 bg-zinc-900 mx-auto rounded-full flex items-center justify-center mb-6 border border-zinc-800">
-            <Info size={32} className="text-zinc-500" />
-          </div>
-          <h2 className="text-2xl font-black mb-2 uppercase tracking-tighter">Connection Required</h2>
-          <p className="text-zinc-500 max-w-sm font-mono text-xs leading-relaxed uppercase tracking-widest">
-            Please connect your ritual terminal to access the MeeChain ecosystem.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Sync loading state to global store
+  useEffect(() => {
+    if (isTokenLoading || isNftLoading) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [isTokenLoading, isNftLoading, setLoading]);
+
+  // Sync error state to global store
+  useEffect(() => {
+    if (isTokenError && tokenErr) {
+      setError(tokenErr.message);
+    }
+  }, [isTokenError, tokenErr, setError]);
 
   return (
-    <div className="relative space-y-8 min-h-[80vh]">
-      {/* Background 3D Effect */}
-      <div className="fixed inset-0 pointer-events-none opacity-40">
-        <HeroScene />
-      </div>
+    <div className="relative space-y-8 min-h-[85vh] flex flex-col justify-center">
+      <HeroScene />
 
-      <header className="relative z-10">
-        <h1 className="text-4xl font-black tracking-tighter uppercase mb-2 italic">System Overview</h1>
-        <p className="text-zinc-500 font-mono text-xs uppercase tracking-[0.2em]">Real-time telemetry from the MeeChain network</p>
-      </header>
+      {!isConnected ? (
+        <div className="relative flex flex-col items-center justify-center text-center z-10 px-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-10 bg-black/40 backdrop-blur-2xl rounded-[2.5rem] border border-zinc-800 max-w-lg mx-auto shadow-2xl"
+          >
+            <div className="w-24 h-24 bg-zinc-950 mx-auto rounded-full flex items-center justify-center mb-8 border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
+              <Shield size={40} className="text-yellow-500/50" />
+            </div>
+            <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter italic">Ritual Clearance Required</h2>
+            <p className="text-zinc-500 font-mono text-xs leading-relaxed uppercase tracking-[0.2em] max-w-xs mx-auto">
+              Identify your signature with the MeeChain network to synchronize your cybernetic assets and rewards.
+            </p>
+          </motion.div>
+        </div>
+      ) : (
+        <div className="max-w-6xl mx-auto w-full px-4 relative z-10">
+          <header className="mb-10 text-center md:text-left">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <h1 className="text-5xl font-black tracking-tighter uppercase mb-2 italic">Quantum Telemetry</h1>
+              <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] uppercase tracking-[0.4em] justify-center md:justify-start">
+                <Binary size={12} className="text-yellow-500" />
+                Live Network Feed • MeeChain Ritual-1337
+              </div>
+            </motion.div>
+          </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-        <StatCard 
-          title="MEE Balance" 
-          value={tokenBalance ? parseFloat(formatUnits(tokenBalance, 18)).toFixed(2) : "0.00"} 
-          unit="MEE" 
-          icon={Coins} 
-          color="text-yellow-500"
-        />
-        <StatCard 
-          title="Collection" 
-          value={nftBalance?.toString() || "0"} 
-          unit="Bots" 
-          icon={Layers} 
-          color="text-blue-500"
-        />
-        <StatCard 
-          title="Network Rewards" 
-          value={rewardRate ? formatUnits(rewardRate, 18) : "0"} 
-          unit="MEE/SEC" 
-          icon={TrendingUp} 
-          color="text-green-500"
-        />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <StatCard 
+              title="MEE Supply" 
+              value={tokenBalance ? parseFloat(formatUnits(tokenBalance, 18)).toFixed(2) : "0.00"} 
+              unit="MEE Tokens" 
+              icon={Coins} 
+              color="text-yellow-500"
+            />
+            <StatCard 
+              title="Bot Fleet" 
+              value={nftBalance?.toString() || "0"} 
+              unit="Active Bots" 
+              icon={Layers} 
+              color="text-indigo-500"
+            />
+            <StatCard 
+              title="Yield Intensity" 
+              value={rewardRate ? formatUnits(rewardRate, 18) : "0"} 
+              unit="MEE / Cycle" 
+              icon={TrendingUp} 
+              color="text-emerald-500"
+            />
+          </div>
 
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 relative z-10 overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-           <Zap size={120} />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-zinc-900/30 backdrop-blur-2xl border border-zinc-800 rounded-3xl p-8 relative overflow-hidden group shadow-2xl"
+          >
+            <div className="absolute -top-20 -right-20 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
+               <Zap size={280} />
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
+              <div className="w-16 h-16 bg-yellow-500/5 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+                <Zap size={32} />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-xl font-bold uppercase tracking-tight">Ritual Terminal Session</h3>
+                <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.2em] mt-1 truncate max-w-[200px] md:max-w-none">{address}</p>
+              </div>
+              <div className="md:ml-auto flex gap-2">
+                <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-[10px] font-mono text-green-500 uppercase tracking-widest">
+                  Secure
+                </div>
+                <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-mono text-blue-500 uppercase tracking-widest">
+                  v2.5
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent w-full mb-8" />
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="space-y-1">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Network Status</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <p className="text-sm font-black text-white uppercase italic">Optimal</p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Ritual Sync</p>
+                <p className="text-sm font-black text-white uppercase italic">99.9% Reliable</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sub-Chain ID</p>
+                <p className="text-sm font-black text-white uppercase italic">1337-Mee</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Node Latency</p>
+                <p className="text-sm font-black text-white uppercase italic">8ms Active</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
-        
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center text-yellow-500">
-            <Zap size={24} />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold uppercase tracking-tight">Active Terminal</h3>
-            <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">{address}</p>
-          </div>
-        </div>
-        <div className="h-[1px] bg-zinc-800 w-full mb-6" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <p className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Status</p>
-            <p className="text-xs font-bold text-green-500 uppercase">Synchronized</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Latency</p>
-            <p className="text-xs font-bold text-white uppercase">12ms</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Network</p>
-            <p className="text-xs font-bold text-white uppercase">MeeChain-1337</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 font-mono uppercase mb-1">Node</p>
-            <p className="text-xs font-bold text-white uppercase">Primary RPC</p>
-          </div>
-        </div>
-      </motion.div>
+      )}
     </div>
   );
 };
