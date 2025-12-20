@@ -24,7 +24,7 @@ const StakingPage: React.FC = () => {
   const { data: stakedBalance, refetch: refetchStaked } = useReadContract({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
-    functionName: 'balanceOf' as any, // Standard staking usually has this
+    functionName: 'balanceOf' as any,
     args: address ? [address] : undefined,
     query: { enabled: !!address }
   });
@@ -45,8 +45,6 @@ const StakingPage: React.FC = () => {
   useEffect(() => {
     if (isTxLoading || isWritePending) {
       setLoading(true);
-    } else if (!isTxLoading && !isWritePending) {
-      // Don't immediately set false if we just succeeded, let success trigger take over
     }
   }, [isTxLoading, isWritePending, setLoading]);
 
@@ -93,7 +91,6 @@ const StakingPage: React.FC = () => {
           functionName: 'getReward',
         });
       } else if (type === 'withdraw') {
-        // Implement full withdrawal
         resultHash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
@@ -114,7 +111,7 @@ const StakingPage: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-12">
       <header className="text-center">
         <h1 className="text-5xl font-black tracking-tighter uppercase mb-4 italic">The Staking Ritual</h1>
-        <p className="text-zinc-500 font-mono text-sm uppercase tracking-[0.3em]">Sacrifice tokens to receive the MEE blessing</p>
+        <p className="text-zinc-500 font-mono text-sm uppercase tracking-[0.3em]">Sacrifice tokens to receive the MCB blessing</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -123,13 +120,13 @@ const StakingPage: React.FC = () => {
           <div>
             <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
               <ArrowDownToLine className="text-yellow-500" />
-              Deposit MEE
+              Sacrifice MCB
             </h3>
-            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Enhance your influence in the system</p>
+            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Enhance your nexus influence</p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Amount to Stake</label>
+            <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Tokens to Stake</label>
             <div className="relative">
               <input 
                 type="number" 
@@ -147,7 +144,7 @@ const StakingPage: React.FC = () => {
               onClick={() => handleAction('approve')}
               className="w-full bg-zinc-100 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
             >
-              Approve MEE Ritual
+              Authorize MCB Flow
             </button>
           ) : (
             <button 
@@ -165,16 +162,16 @@ const StakingPage: React.FC = () => {
           <div>
             <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
               <Gift className="text-green-500" />
-              Accumulated
+              Manifested
             </h3>
-            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Pending rewards from the chain</p>
+            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Pending blessings from the Nexus</p>
           </div>
 
           <div className="py-8 text-center">
             <p className="text-5xl font-black text-white mb-2">
               {earned ? parseFloat(formatUnits(earned, 18)).toFixed(4) : "0.0000"}
             </p>
-            <p className="text-xs font-mono text-zinc-500 uppercase tracking-[0.2em]">MEE Rewards Earned</p>
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-[0.2em]">MCB Rewards Earned</p>
           </div>
 
           <button 
@@ -191,8 +188,8 @@ const StakingPage: React.FC = () => {
         <div className="flex items-center gap-4">
           <Ban className="text-red-500" />
           <div className="text-left">
-            <h4 className="text-xs font-bold uppercase">Exit Ritual</h4>
-            <p className="text-[10px] text-zinc-500 font-mono uppercase">Unstake your assets at any time</p>
+            <h4 className="text-xs font-bold uppercase">Exit Nexus</h4>
+            <p className="text-[10px] text-zinc-500 font-mono uppercase">Recover your MCB assets</p>
           </div>
         </div>
         <button 

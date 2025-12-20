@@ -25,6 +25,8 @@ export const MINIMAL_NFT_ABI = [
   { name: 'ownerOf', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
   { name: 'tokenURI', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'string' }], stateMutability: 'view' },
   { name: 'setApprovalForAll', type: 'function', inputs: [{ name: 'operator', type: 'address' }, { name: 'approved', type: 'bool' }], outputs: [], stateMutability: 'nonpayable' },
+  { name: 'isApprovedForAll', type: 'function', inputs: [{ name: 'owner', type: 'address' }, { name: 'operator', type: 'address' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { name: 'Transfer', type: 'event', inputs: [{ name: 'from', type: 'address', indexed: true }, { name: 'to', type: 'address', indexed: true }, { name: 'tokenId', type: 'uint256', indexed: true }] },
 ] as const;
 
 export const MINIMAL_STAKING_ABI = [
@@ -33,4 +35,12 @@ export const MINIMAL_STAKING_ABI = [
   { name: 'getReward', type: 'function', inputs: [], outputs: [], stateMutability: 'nonpayable' },
   { name: 'earned', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { name: 'rewardRate', type: 'function', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { name: 'balanceOf', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+] as const;
+
+export const MINIMAL_MARKETPLACE_ABI = [
+  { name: 'listNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }, { name: 'price', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { name: 'buyNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'payable' },
+  { name: 'cancelListing', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { name: 'listings', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ name: 'seller', type: 'address' }, { name: 'price', type: 'uint256' }, { name: 'isActive', type: 'bool' }], stateMutability: 'view' },
 ] as const;

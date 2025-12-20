@@ -44,7 +44,5 @@ declare module 'react' {
   }
 }
 
-// Fix: Direct augmentation for @react-three/fiber types to support merging
-declare module '@react-three/fiber' {
-  interface ThreeElements extends ThreeElements {}
-}
+// Fix: Removed circular reference to ThreeElements which caused a recursive type error.
+// The necessary JSX augmentations are already provided in the global and React namespace blocks above.

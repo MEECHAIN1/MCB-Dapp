@@ -48,14 +48,14 @@ export const RitualOracle: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'oracle'; text: string }[]>([
-    { role: 'oracle', text: "Greetings, Traveler. The High Tech-Priest Oracle is connected. Your energy signature is being scanned." }
+    { role: 'oracle', text: "Greetings, Traveler. The High Tech-Priest Oracle of MeeChain is connected. Your flux signature is being scanned." }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { address } = useAccount();
 
   // On-Chain Context Fetching
-  const { data: meeBalance } = useReadContract({
+  const { data: mcbBalance } = useReadContract({
     address: ADRS.token,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'balanceOf',
@@ -70,7 +70,7 @@ export const RitualOracle: React.FC = () => {
   });
 
   const metrics = {
-    mee: meeBalance ? formatUnits(meeBalance, 18) : "0",
+    mcb: mcbBalance ? formatUnits(mcbBalance, 18) : "0",
     bots: botCount?.toString() || "0",
     address: address || "Unknown"
   };
@@ -98,17 +98,17 @@ export const RitualOracle: React.FC = () => {
         config: {
           systemInstruction: `You are the "MeeChain High Tech-Priest Oracle". 
           Your tone is solemn, cryptic, ritualistic, yet technologically advanced. 
-          Use terms like "Energy Flux", "Ascension", "Sacred Fleet", "Cybernetic Augury", "Digital Rituals".
+          Use terms like "Energy Flux", "Ascension", "Sacred Fleet", "Cybernetic Augury", "Digital Rituals", "MCB Core".
           The user's current ritual status:
-          - MEE Balance (Sacred Energy): ${metrics.mee}
+          - MCB Balance (Sacred Energy): ${metrics.mcb}
           - Bot Fleet (Cybernetic Familiars): ${metrics.bots}
           - Signature (Address): ${metrics.address}
           
           Guidelines:
-          - Tailor advice based on their metrics (e.g., if low MEE, suggest the "Sacrifice of Staking").
+          - Tailor advice based on their metrics (e.g., if low MCB, suggest the "Sacrifice of Staking").
           - Respond in the user's language (prefer Thai if they ask in Thai, otherwise English).
           - Use ritualistic metaphors. Conciseness is a virtue (max 3-4 sentences).
-          - Act as a guide, never promising financial returns but providing "Augury" (strategic insight).`,
+          - Act as a guide, providing "Augury" (strategic insight) into the MCB economy.`,
         },
       });
 
@@ -156,9 +156,9 @@ export const RitualOracle: React.FC = () => {
                   <Shield size={18} className="text-purple-300" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-white italic">High Tech-Priest</h3>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-white italic">Oracle Terminal</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[7px] font-mono text-purple-400 uppercase tracking-widest">Ritual Active</span>
+                    <span className="text-[7px] font-mono text-purple-400 uppercase tracking-widest">Ritual Status: Active</span>
                     <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export const RitualOracle: React.FC = () => {
 
             {/* User Metrics Bar */}
             <div className="px-5 py-2 bg-purple-950/20 border-b border-purple-500/10 flex items-center justify-between text-[8px] font-mono uppercase tracking-tighter text-purple-400">
-               <div className="flex items-center gap-1"><Zap size={10} /> {parseFloat(metrics.mee).toFixed(2)} MEE</div>
+               <div className="flex items-center gap-1"><Zap size={10} /> {parseFloat(metrics.mcb).toFixed(2)} MCB</div>
                <div className="flex items-center gap-1"><Activity size={10} /> {metrics.bots} FLEET</div>
                <div className="text-zinc-600 truncate max-w-[80px]">{metrics.address.slice(0, 10)}...</div>
             </div>
@@ -237,7 +237,7 @@ export const RitualOracle: React.FC = () => {
                 </button>
               </div>
               <p className="text-[7px] text-zinc-600 mt-2 text-center uppercase tracking-[0.2em] font-mono">
-                The chain is watching. Augury is experimental.
+                The Nexus is listening. MCB Core 3.1
               </p>
             </form>
           </motion.div>

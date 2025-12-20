@@ -93,9 +93,9 @@ const DashboardPage: React.FC = () => {
             <div className="w-24 h-24 bg-zinc-950 mx-auto rounded-full flex items-center justify-center mb-8 border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
               <Shield size={40} className="text-yellow-500/50" />
             </div>
-            <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter italic">Ritual Clearance Required</h2>
+            <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter italic text-white">Access Protocol Required</h2>
             <p className="text-zinc-500 font-mono text-xs leading-relaxed uppercase tracking-[0.2em] max-w-xs mx-auto">
-              Identify your signature with the MeeChain network to synchronize your cybernetic assets and rewards.
+              Identify your cyber-signature to synchronize with the MeeChain Nexus.
             </p>
           </motion.div>
         </div>
@@ -106,10 +106,10 @@ const DashboardPage: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <h1 className="text-5xl font-black tracking-tighter uppercase mb-2 italic">Quantum Telemetry</h1>
+              <h1 className="text-5xl font-black tracking-tighter uppercase mb-2 italic">Nexus Telemetry</h1>
               <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] uppercase tracking-[0.4em] justify-center md:justify-start">
                 <Binary size={12} className="text-yellow-500" />
-                Live Network Feed • MeeChain Ritual-1337
+                Live Flux Stream • MeeChain-Ritual
               </div>
             </motion.div>
 
@@ -122,31 +122,31 @@ const DashboardPage: React.FC = () => {
                   <Sparkles size={16} className="text-purple-400" />
                </div>
                <div className="text-left">
-                  <p className="text-[9px] font-mono text-purple-400 uppercase tracking-widest">Ritual Guide</p>
-                  <p className="text-[11px] font-black text-white uppercase italic">Oracle Link Active</p>
+                  <p className="text-[9px] font-mono text-purple-400 uppercase tracking-widest">Oracle Link</p>
+                  <p className="text-[11px] font-black text-white uppercase italic">Channel Active</p>
                </div>
             </motion.div>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <StatCard 
-              title="MEE Supply" 
+              title="Sacred Flux" 
               value={tokenBalance ? parseFloat(formatUnits(tokenBalance, 18)).toFixed(2) : "0.00"} 
-              unit="MEE Tokens" 
+              unit="MCB Tokens" 
               icon={Coins} 
               color="text-yellow-500"
             />
             <StatCard 
-              title="Bot Fleet" 
+              title="Cyber Fleet" 
               value={nftBalance?.toString() || "0"} 
               unit="Active Bots" 
               icon={Layers} 
               color="text-indigo-500"
             />
             <StatCard 
-              title="Yield Intensity" 
+              title="Blessing Flow" 
               value={rewardRate ? formatUnits(rewardRate, 18) : "0"} 
-              unit="MEE / Cycle" 
+              unit="MCB / Cycle" 
               icon={TrendingUp} 
               color="text-emerald-500"
             />
@@ -162,23 +162,23 @@ const DashboardPage: React.FC = () => {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="space-y-1">
-                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Network Status</p>
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Ritual Status</p>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                   <p className="text-sm font-black text-white uppercase italic">Optimal</p>
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Ritual Sync</p>
-                <p className="text-sm font-black text-white uppercase italic">99.9% Reliable</p>
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sync Ratio</p>
+                <p className="text-sm font-black text-white uppercase italic">99.98%</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sub-Chain ID</p>
-                <p className="text-sm font-black text-white uppercase italic">1337-Mee</p>
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Protocol</p>
+                <p className="text-sm font-black text-white uppercase italic">MCB-Core</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Node Latency</p>
-                <p className="text-sm font-black text-white uppercase italic">8ms Active</p>
+                <p className="text-sm font-black text-white uppercase italic">4ms Active</p>
               </div>
             </div>
           </motion.div>
