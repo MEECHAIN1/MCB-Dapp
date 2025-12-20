@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { localhost } from 'viem/chains';
 import { StatusOverlay } from './components/StatusOverlay';
 import { Navbar } from './components/Navbar';
+import { RitualOracle } from './components/RitualOracle';
 import DashboardPage from './pages/DashboardPage';
 import StakingPage from './pages/StakingPage';
 import GalleryPage from './pages/GalleryPage';
@@ -76,6 +77,7 @@ const App: React.FC = () => {
                 <Route path="/events" element={<EventLogPage />} />
               </Routes>
             </main>
+            <RitualOracle />
             <StatusOverlay />
           </div>
         </Router>

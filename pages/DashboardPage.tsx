@@ -4,7 +4,7 @@ import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
-import { Coins, Layers, TrendingUp, Shield, Binary } from 'lucide-react';
+import { Coins, Layers, TrendingUp, Shield, Binary, Sparkles } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
 import { QuantumHUD } from '../components/QuantumHUD';
 import { QuantumRitual } from '../components/QuantumRitual';
@@ -101,7 +101,7 @@ const DashboardPage: React.FC = () => {
         </div>
       ) : (
         <div className="max-w-6xl mx-auto w-full px-4 relative z-10 pt-10">
-          <header className="mb-10 text-center md:text-left">
+          <header className="mb-10 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -111,6 +111,20 @@ const DashboardPage: React.FC = () => {
                 <Binary size={12} className="text-yellow-500" />
                 Live Network Feed • MeeChain Ritual-1337
               </div>
+            </motion.div>
+
+            <motion.div
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               className="bg-purple-900/10 border border-purple-500/30 px-6 py-3 rounded-2xl backdrop-blur-md flex items-center gap-4"
+            >
+               <div className="p-2 bg-purple-500/20 rounded-lg">
+                  <Sparkles size={16} className="text-purple-400" />
+               </div>
+               <div className="text-left">
+                  <p className="text-[9px] font-mono text-purple-400 uppercase tracking-widest">Ritual Guide</p>
+                  <p className="text-[11px] font-black text-white uppercase italic">Oracle Link Active</p>
+               </div>
             </motion.div>
           </header>
 
