@@ -10,12 +10,13 @@ import { useAppState } from '../context/useAppState';
 // In a production environment, this list would be fetched from a subgraph or indexer.
 const DISCOVERY_BOT_IDS = [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n];
 
-const BotListingCard = ({ tokenId, onBuy, onCancel, currentAccount }: { 
+// Fix: Explicitly type BotListingCard as a React.FC and update callback types to support async functions
+const BotListingCard: React.FC<{ 
   tokenId: bigint, 
-  onBuy: (id: bigint, price: bigint) => void,
-  onCancel: (id: bigint) => void,
+  onBuy: (id: bigint, price: bigint) => void | Promise<void>,
+  onCancel: (id: bigint) => void | Promise<void>,
   currentAccount?: Address 
-}) => {
+}> = ({ tokenId, onBuy, onCancel, currentAccount }) => {
   const { data: listing, isLoading } = useReadContract({
     address: ADRS.marketplace as `0x${string}`,
     abi: MINIMAL_MARKETPLACE_ABI,

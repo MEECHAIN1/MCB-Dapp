@@ -32,17 +32,11 @@ declare global {
   }
 
   // Fix: Augment global JSX namespace to include React Three Fiber intrinsic elements
+  // We extend the global namespace carefully to ensure standard HTML elements are preserved.
   namespace JSX {
     interface IntrinsicElements extends ThreeElements {}
   }
 }
 
-// Fix: Augment React's JSX namespace for React 18+ to resolve "Property does not exist on type 'JSX.IntrinsicElements'"
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
-}
-
-// Fix: Removed circular reference to ThreeElements which caused a recursive type error.
-// The necessary JSX augmentations are already provided in the global and React namespace blocks above.
+// Fix: Removed the problematic declare module 'react' block that was causing 
+// property 'div' does not exist errors by shadowing the core React JSX types.
