@@ -4,8 +4,10 @@ import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
-import { Coins, Layers, TrendingUp, Info, Zap, Shield, Binary } from 'lucide-react';
+import { Coins, Layers, TrendingUp, Shield, Binary } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
+import { QuantumHUD } from '../components/QuantumHUD';
+import { QuantumRitual } from '../components/QuantumRitual';
 import { useAppState } from '../context/useAppState';
 
 const StatCard = ({ title, value, unit, icon: Icon, color }: any) => (
@@ -77,6 +79,9 @@ const DashboardPage: React.FC = () => {
   return (
     <div className="relative space-y-8 min-h-[85vh] flex flex-col justify-center">
       <HeroScene />
+      <QuantumRitual />
+      
+      {isConnected && <QuantumHUD />}
 
       {!isConnected ? (
         <div className="relative flex flex-col items-center justify-center text-center z-10 px-4">
@@ -95,7 +100,7 @@ const DashboardPage: React.FC = () => {
           </motion.div>
         </div>
       ) : (
-        <div className="max-w-6xl mx-auto w-full px-4 relative z-10">
+        <div className="max-w-6xl mx-auto w-full px-4 relative z-10 pt-10">
           <header className="mb-10 text-center md:text-left">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -137,30 +142,8 @@ const DashboardPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-zinc-900/30 backdrop-blur-2xl border border-zinc-800 rounded-3xl p-8 relative overflow-hidden group shadow-2xl"
+            className="bg-zinc-900/10 backdrop-blur-xl border border-zinc-800/50 rounded-3xl p-8 relative overflow-hidden group shadow-2xl"
           >
-            <div className="absolute -top-20 -right-20 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
-               <Zap size={280} />
-            </div>
-            
-            <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
-              <div className="w-16 h-16 bg-yellow-500/5 rounded-2xl flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
-                <Zap size={32} />
-              </div>
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-bold uppercase tracking-tight">Ritual Terminal Session</h3>
-                <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.2em] mt-1 truncate max-w-[200px] md:max-w-none">{address}</p>
-              </div>
-              <div className="md:ml-auto flex gap-2">
-                <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-[10px] font-mono text-green-500 uppercase tracking-widest">
-                  Secure
-                </div>
-                <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-mono text-blue-500 uppercase tracking-widest">
-                  v2.5
-                </div>
-              </div>
-            </div>
-
             <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent w-full mb-8" />
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">

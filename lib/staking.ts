@@ -11,6 +11,14 @@ export const getEarnedRewards = async (publicClient: PublicClient, address: Addr
   });
 };
 
+export const getRewardRate = async (publicClient: PublicClient) => {
+  return await publicClient.readContract({
+    address: ADRS.staking as Address,
+    abi: MINIMAL_STAKING_ABI,
+    functionName: 'rewardRate',
+  });
+};
+
 export const stakeTokens = async (
   walletClient: WalletClient,
   account: Address,
@@ -20,6 +28,20 @@ export const stakeTokens = async (
     address: ADRS.staking as Address,
     abi: MINIMAL_STAKING_ABI,
     functionName: 'stake',
+    args: [amount],
+    account,
+  });
+};
+
+export const withdrawTokens = async (
+  walletClient: WalletClient,
+  account: Address,
+  amount: bigint
+) => {
+  return await walletClient.writeContract({
+    address: ADRS.staking as Address,
+    abi: MINIMAL_STAKING_ABI,
+    functionName: 'withdraw',
     args: [amount],
     account,
   });

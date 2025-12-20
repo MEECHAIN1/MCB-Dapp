@@ -8,6 +8,7 @@ import { Navbar } from './components/Navbar';
 import DashboardPage from './pages/DashboardPage';
 import StakingPage from './pages/StakingPage';
 import GalleryPage from './pages/GalleryPage';
+import EventLogPage from './pages/EventLogPage';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 
@@ -72,6 +73,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/staking" element={<StakingPage />} />
                 <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/events" element={<EventLogPage />} />
               </Routes>
             </main>
             <StatusOverlay />

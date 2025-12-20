@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-// Fix: Remove direct reference to potentially missing vite/client and provide essential types
-import { ThreeElements } from '@react-three/fiber'
+import { ThreeElements } from '@react-three/fiber';
 
 declare global {
-  // Define ImportMetaEnv for use with Vite
+  // Fix: Provide internal definition for Vite's ImportMetaEnv to resolve type errors
   interface ImportMetaEnv {
     readonly VITE_RPC_URL: string;
     readonly VITE_CHAIN_ID: string;
@@ -17,14 +16,21 @@ declare global {
     readonly VITE_STAKING_ADDRESS: string;
     readonly VITE_TOKEN_ADDRESS: string;
     readonly VITE_MARKETPLACE_ADDRESS: string;
+    readonly VITE_EXPLORER_URL: string;
   }
 
-  // Augment ImportMeta to include env
   interface ImportMeta {
     readonly env: ImportMetaEnv;
   }
 
-  // Augment JSX.IntrinsicElements for React Three Fiber
+  // Fix: Augment global JSX namespace to include React Three Fiber intrinsic elements
+  namespace JSX {
+    interface IntrinsicElements extends ThreeElements {}
+  }
+}
+
+// Fix: Augment React's JSX namespace for modern React environments to prevent "Property does not exist" errors on intrinsic R3F elements
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements extends ThreeElements {}
   }

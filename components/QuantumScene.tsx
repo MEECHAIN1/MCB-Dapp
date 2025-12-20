@@ -5,22 +5,9 @@
 */
 
 import React, { useRef, Suspense } from 'react';
-import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
-import { Float, Sphere, Torus, Stars, Environment, OrbitControls } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, Stars, Environment, OrbitControls, Torus } from '@react-three/drei';
 import * as THREE from 'three';
-
-// Fix: Use a comprehensive JSX augmentation to resolve intrinsic element errors for R3F
-declare global {
-  namespace React {
-    namespace JSX {
-      interface IntrinsicElements extends ThreeElements {}
-    }
-  }
-  // Fallback for environments looking at the global JSX namespace
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
-}
 
 /**
  * QuantumEffect creates a holographic pulse overlay for the central orb.
@@ -46,6 +33,7 @@ const QuantumEffect = () => {
   });
 
   return (
+    // Fix: Using standard mesh element; types are provided via global augmentation in vite-env.d.ts
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.6, 64, 64]} />
       <meshBasicMaterial
@@ -70,6 +58,7 @@ const QuantumOrb = () => {
   });
 
   return (
+    // Fix: Using standard mesh element; types are provided via global augmentation in vite-env.d.ts
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.5, 64, 64]} />
       <meshStandardMaterial
@@ -97,6 +86,7 @@ const MacroscopicWave = () => {
 
   return (
     <Torus ref={ref} args={[3, 0.02, 12, 64]} rotation={[Math.PI / 2, 0, 0]}>
+      {/* Fix: Standard R3F intrinsic material element */}
       <meshStandardMaterial 
         color="#C5A059" 
         emissive="#C5A059" 
@@ -118,6 +108,7 @@ export const HeroScene: React.FC = () => {
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={null}>
+          {/* Fix: R3F intrinsic light elements supported by global augmentation */}
           <ambientLight intensity={0.4} />
           <pointLight position={[10, 10, 10]} intensity={1} />
           <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
