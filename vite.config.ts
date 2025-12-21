@@ -4,8 +4,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    // Gemini API requires process.env.API_KEY to be available
-    'import.math.env.API_KEY': JSON.stringify(import.math.env.API_KEY),
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
   },
   build: {
     outDir: 'dist',
