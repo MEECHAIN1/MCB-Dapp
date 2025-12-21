@@ -5,13 +5,12 @@ export default defineConfig({
   plugins: [react()],
   define: {
     // Gemini API requires process.env.API_KEY to be available
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
+    'import.math.env.API_KEY': JSON.stringify(import.math.env.API_KEY),
   },
   build: {
-    minify: 'esbuild',
     outDir: 'dist',
+    minify: 'esbuild',
     sourcemap: false,
-    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
