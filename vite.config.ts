@@ -8,13 +8,14 @@ export default defineConfig({
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
   },
   build: {
+    minify: 'esbuild',
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true,
+        drop_debugger: true
       },
     },
     rollupOptions: {
