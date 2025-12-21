@@ -18,3 +18,15 @@ View your app in AI Studio: https://ai.studio/apps/drive/1QhBdBjurc8dhgvHiff4eG1
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+# ⚡ MeeChain MeeBot DApp
+
+ยินดีต้อนรับสู่ **MeeBot Ritual Interface** ระบบจัดการหุ่นยนต์ไซเบอร์เนติกบน MeeChain DApp ที่รวดเร็วและแข็งแกร่งที่สุด
+
+## 🚀 เริ่มต้นใช้งานใน 1 นาที (Quick Start)
+
+1. **Clone & Install**
+   ```bash
+   git clone https://github.com/meechain1/meechain-meebot-dapp
+   cd meechain-meebot-dapp
+   npm install
