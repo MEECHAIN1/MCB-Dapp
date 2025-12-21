@@ -12,7 +12,14 @@ import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI } from '../lib/contracts';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (!ai && process.env.API_KEY) {
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+};
 
 // Audio Utility for Ritual Sounds
 const playRitualSound = (type: 'chime' | 'drone' | 'click') => {
@@ -92,18 +99,24 @@ export const RitualOracle: React.FC = () => {
     playRitualSound('click');
 
     try {
-      const response = await ai.models.generateContent({
+      const aiInstance = getAI();
+      if (!aiInstance) {
+        setMessages(prev => [...prev, { role: 'oracle', text: "The Oracle is not properly initialized. API key is missing from the mystical database." }]);
+        return;
+      }
+
+      const response = await aiInstance.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMessage,
         config: {
-          systemInstruction: `You are the "MeeChain High Tech-Priest Oracle". 
-          Your tone is solemn, cryptic, ritualistic, yet technologically advanced. 
+          systemInstruction: `You are the "MeeChain High Tech-Priest Oracle".
+          Your tone is solemn, cryptic, ritualistic, yet technologically advanced.
           Use terms like "Energy Flux", "Ascension", "Sacred Fleet", "Cybernetic Augury", "Digital Rituals", "MCB Core".
           The user's current ritual status:
           - MCB Balance (Sacred Energy): ${metrics.mcb}
           - Bot Fleet (Cybernetic Familiars): ${metrics.bots}
           - Signature (Address): ${metrics.address}
-          
+
           Guidelines:
           - Tailor advice based on their metrics (e.g., if low MCB, suggest the "Sacrifice of Staking").
           - Respond in the user's language (prefer Thai if they ask in Thai, otherwise English).
