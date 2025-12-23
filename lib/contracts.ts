@@ -9,7 +9,7 @@ export const ADRS = {
   nft: ((import.meta as any).env?.VITE_NFT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
   marketplace: ((import.meta as any).env?.VITE_MARKETPLACE_ADDRESS || "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
   staking: ((import.meta as any).env?.VITE_STAKING_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
-  token: ((import.meta as any).env?.VITE_TOKEN_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, // Often same as staking or specialized ERC20
+  token: ((import.meta as any).env?.VITE_TOKEN_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, 
 };
 
 export const MINIMAL_ERC20_ABI = [
@@ -21,6 +21,7 @@ export const MINIMAL_ERC20_ABI = [
 ] as const;
 
 export const MINIMAL_NFT_ABI = [
+  { name: 'safeMint', type: 'function', inputs: [{ name: 'to', type: 'address' }, { name: 'uri', type: 'string' }], outputs: [], stateMutability: 'nonpayable' },
   { name: 'balanceOf', type: 'function', inputs: [{ name: 'owner', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { name: 'ownerOf', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
   { name: 'tokenURI', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ type: 'string' }], stateMutability: 'view' },

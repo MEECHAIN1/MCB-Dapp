@@ -4,16 +4,17 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
+    // Gemini API requires process.env.API_KEY to be available
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
   },
   build: {
     outDir: 'dist',
-    minify: 'esbuild',
     sourcemap: false,
+    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
-        drop_debugger: true
+        drop_debugger: true,
       },
     },
     rollupOptions: {

@@ -11,6 +11,20 @@ export const getNFTBalance = async (publicClient: PublicClient, address: Address
   });
 };
 
+export const mintBot = async (
+  walletClient: WalletClient,
+  account: Address,
+  uri: string = "ipfs://mcb-bot-ritual-metadata"
+) => {
+  return await walletClient.writeContract({
+    address: ADRS.nft as Address,
+    abi: MINIMAL_NFT_ABI,
+    functionName: 'safeMint',
+    args: [account, uri],
+    account,
+  });
+};
+
 export const getNFTUri = async (publicClient: PublicClient, tokenId: bigint) => {
   return await publicClient.readContract({
     address: ADRS.nft as Address,

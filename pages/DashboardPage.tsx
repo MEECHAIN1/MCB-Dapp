@@ -1,14 +1,15 @@
 
 import React, { useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
-import { Coins, Layers, TrendingUp, Shield, Binary, Sparkles } from 'lucide-react';
+import { Coins, Layers, TrendingUp, Shield, Binary, Sparkles, Plus, ShoppingBag } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
 import { QuantumHUD } from '../components/QuantumHUD';
 import { QuantumRitual } from '../components/QuantumRitual';
 import { useAppState } from '../context/useAppState';
+import { Link } from 'react-router-dom';
 
 const StatCard = ({ title, value, unit, icon: Icon, color }: any) => (
   <motion.div 
@@ -35,9 +36,9 @@ const StatCard = ({ title, value, unit, icon: Icon, color }: any) => (
 
 const DashboardPage: React.FC = () => {
   const { address, isConnected } = useAccount();
-  const { setLoading, setError } = useAppState();
+  const { setLoading, setError, triggerSuccess, setTxHash } = useAppState();
 
-  const { data: tokenBalance, isLoading: isTokenLoading, isError: isTokenError, error: tokenErr } = useReadContract({
+  const { data: tokenBalance, isLoading: isTokenLoading, refetch: refetchToken } = useReadContract({
     address: ADRS.token as `0x${string}`,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'balanceOf',
@@ -45,7 +46,7 @@ const DashboardPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: nftBalance, isLoading: isNftLoading } = useReadContract({
+  const { data: nftBalance, isLoading: isNftLoading, refetch: refetchNft } = useReadContract({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
     functionName: 'balanceOf',
@@ -53,28 +54,34 @@ const DashboardPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: rewardRate } = useReadContract({
-    address: ADRS.staking as `0x${string}`,
-    abi: MINIMAL_STAKING_ABI,
-    functionName: 'rewardRate',
-    query: { refetchInterval: 10000 }
-  });
+  const { writeContractAsync, data: mintHash, isPending: isMintPending } = useWriteContract();
+  const { isLoading: isTxLoading, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: mintHash });
 
-  // Sync loading state to global store
   useEffect(() => {
-    if (isTokenLoading || isNftLoading) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, [isTokenLoading, isNftLoading, setLoading]);
+    setLoading(isTokenLoading || isNftLoading || isMintPending || isTxLoading);
+  }, [isTokenLoading, isNftLoading, isMintPending, isTxLoading, setLoading]);
 
-  // Sync error state to global store
   useEffect(() => {
-    if (isTokenError && tokenErr) {
-      setError(tokenErr.message);
+    if (isTxSuccess) {
+      triggerSuccess();
+      refetchNft();
     }
-  }, [isTokenError, tokenErr, setError]);
+  }, [isTxSuccess, triggerSuccess, refetchNft]);
+
+  const handleAcquisition = async () => {
+    if (!address) return;
+    try {
+      const hash = await writeContractAsync({
+        address: ADRS.nft as `0x${string}`,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'safeMint',
+        args: [address, "ipfs://bot-telemetry-nexus"],
+      });
+      setTxHash(hash);
+    } catch (err: any) {
+      setError(err.shortMessage || err.message);
+    }
+  };
 
   return (
     <div className="relative space-y-8 min-h-[85vh] flex flex-col justify-center">
@@ -102,10 +109,7 @@ const DashboardPage: React.FC = () => {
       ) : (
         <div className="max-w-6xl mx-auto w-full px-4 relative z-10 pt-10">
           <header className="mb-10 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <h1 className="text-5xl font-black tracking-tighter uppercase mb-2 italic">Nexus Telemetry</h1>
               <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] uppercase tracking-[0.4em] justify-center md:justify-start">
                 <Binary size={12} className="text-yellow-500" />
@@ -113,19 +117,21 @@ const DashboardPage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.div
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               className="bg-purple-900/10 border border-purple-500/30 px-6 py-3 rounded-2xl backdrop-blur-md flex items-center gap-4"
-            >
-               <div className="p-2 bg-purple-500/20 rounded-lg">
-                  <Sparkles size={16} className="text-purple-400" />
-               </div>
-               <div className="text-left">
-                  <p className="text-[9px] font-mono text-purple-400 uppercase tracking-widest">Oracle Link</p>
-                  <p className="text-[11px] font-black text-white uppercase italic">Channel Active</p>
-               </div>
-            </motion.div>
+            <div className="flex gap-4">
+              <button 
+                onClick={handleAcquisition}
+                disabled={isMintPending || isTxLoading}
+                className="bg-yellow-500 text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-yellow-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.2)]"
+              >
+                <Plus size={16} /> Synchronize New Unit
+              </button>
+              <Link 
+                to="/marketplace"
+                className="bg-zinc-900 border border-zinc-800 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-zinc-800 transition-all"
+              >
+                <ShoppingBag size={16} /> Visit Marketplace
+              </Link>
+            </div>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -145,7 +151,7 @@ const DashboardPage: React.FC = () => {
             />
             <StatCard 
               title="Blessing Flow" 
-              value={rewardRate ? formatUnits(rewardRate, 18) : "0"} 
+              value="Simulated" 
               unit="MCB / Cycle" 
               icon={TrendingUp} 
               color="text-emerald-500"
@@ -159,7 +165,6 @@ const DashboardPage: React.FC = () => {
             className="bg-zinc-900/10 backdrop-blur-xl border border-zinc-800/50 rounded-3xl p-8 relative overflow-hidden group shadow-2xl"
           >
             <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent w-full mb-8" />
-
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="space-y-1">
                 <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Ritual Status</p>
@@ -168,17 +173,18 @@ const DashboardPage: React.FC = () => {
                   <p className="text-sm font-black text-white uppercase italic">Optimal</p>
                 </div>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Sync Ratio</p>
-                <p className="text-sm font-black text-white uppercase italic">99.98%</p>
-              </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-center md:text-left">
                 <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Protocol</p>
                 <p className="text-sm font-black text-white uppercase italic">MCB-Core</p>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Node Latency</p>
-                <p className="text-sm font-black text-white uppercase italic">4ms Active</p>
+              {/* Added simulated fleet health */}
+              <div className="space-y-1 hidden lg:block">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Fleet Integrity</p>
+                <p className="text-sm font-black text-white uppercase italic">100% Active</p>
+              </div>
+              <div className="space-y-1 hidden lg:block">
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Nexus Load</p>
+                <p className="text-sm font-black text-white uppercase italic">Low</p>
               </div>
             </div>
           </motion.div>

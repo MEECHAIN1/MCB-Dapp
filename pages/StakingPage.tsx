@@ -13,7 +13,7 @@ const StakingPage: React.FC = () => {
   const [stakeAmount, setStakeAmount] = useState('');
 
   // Contract Reads
-  const { data: earned, refetch: refetchEarned } = useReadContract({
+  const { data: earned, refetch: refetchEarned, isLoading: isEarnedLoading } = useReadContract({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
     functionName: 'earned',
@@ -21,7 +21,7 @@ const StakingPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: stakedBalance, refetch: refetchStaked } = useReadContract({
+  const { data: stakedBalance, refetch: refetchStaked, isLoading: isStakedLoading } = useReadContract({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
     functionName: 'balanceOf' as any,
@@ -29,7 +29,7 @@ const StakingPage: React.FC = () => {
     query: { enabled: !!address }
   });
 
-  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance, isLoading: isAllowanceLoading } = useReadContract({
     address: ADRS.token as `0x${string}`,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'allowance',
@@ -41,12 +41,10 @@ const StakingPage: React.FC = () => {
   
   const { isLoading: isTxLoading, isSuccess: isTxSuccess, isError: isTxError, error: txError } = useWaitForTransactionReceipt({ hash });
 
-  // Sync transaction lifecycle with global app state
+  // Sync transaction lifecycle and initial data fetching with global app state
   useEffect(() => {
-    if (isTxLoading || isWritePending) {
-      setLoading(true);
-    }
-  }, [isTxLoading, isWritePending, setLoading]);
+    setLoading(isTxLoading || isWritePending || isEarnedLoading || isStakedLoading || isAllowanceLoading);
+  }, [isTxLoading, isWritePending, isEarnedLoading, isStakedLoading, isAllowanceLoading, setLoading]);
 
   useEffect(() => {
     if (isTxSuccess) {
