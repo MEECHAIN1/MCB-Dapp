@@ -1,5 +1,8 @@
 
 import { create } from 'zustand';
+import { writeContract, waitForTransactionReceipt } from '@wagmi/core';
+import { config } from '../lib/wagmiConfig';
+import { ADRS, MINIMAL_MINER_ABI } from '../lib/contracts';
 
 export type Language = 'EN' | 'TH';
 
@@ -15,10 +18,11 @@ interface AppState {
   triggerSuccess: () => void;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
+  initiateManualRitual: () => Promise<void>;
   reset: () => void;
 }
 
-export const useAppState = create<AppState>((set) => ({
+export const useAppState = create<AppState>((set, get) => ({
   isLoading: false,
   error: null,
   txHash: null,
@@ -33,5 +37,34 @@ export const useAppState = create<AppState>((set) => ({
   },
   setLanguage: (lang) => set({ language: lang }),
   toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
+  
+  initiateManualRitual: async () => {
+    set({ isLoading: true, error: null, txHash: null });
+    
+    try {
+      // 🔮 1. Initiate Ritual Transaction
+      const hash = await writeContract(config, {
+        address: ADRS.miner as `0x${string}`,
+        abi: MINIMAL_MINER_ABI,
+        functionName: 'ritualMint',
+      });
+
+      set({ txHash: hash });
+
+      // ⏳ 2. Wait for confirmation
+      await waitForTransactionReceipt(config, { hash });
+
+      // 🎉 3. Success! Trigger global celebration
+      get().triggerSuccess();
+      
+    } catch (err: any) {
+      console.error("Ritual Interrupted:", err);
+      set({ 
+        error: err.shortMessage || (get().language === 'EN' ? "Ritual energy flux error: Process failed" : "กระแสพลังงานขัดข้อง: พิธีกรรมล้มเหลว"), 
+        isLoading: false 
+      });
+    }
+  },
+
   reset: () => set({ isLoading: false, error: null, txHash: null, ritualSuccess: false }),
 }));

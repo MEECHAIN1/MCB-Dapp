@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Fix: Use type assertion for import.meta.env to resolve missing type definition errors
 export const ADRS = {
   nft: ((import.meta as any).env?.VITE_NFT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
   marketplace: ((import.meta as any).env?.VITE_MARKETPLACE_ADDRESS || "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
   staking: ((import.meta as any).env?.VITE_STAKING_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
   token: ((import.meta as any).env?.VITE_TOKEN_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, 
+  miner: ((import.meta as any).env?.VITE_MINER_ADDRESS || "0x70997970C51812dc3A010C7d01b50e0d17dc79C8") as `0x${string}`,
 };
 
 export const MINIMAL_ERC20_ABI = [
@@ -44,4 +44,8 @@ export const MINIMAL_MARKETPLACE_ABI = [
   { name: 'buyNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'payable' },
   { name: 'cancelListing', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
   { name: 'listings', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ name: 'seller', type: 'address' }, { name: 'price', type: 'uint256' }, { name: 'isActive', type: 'bool' }], stateMutability: 'view' },
+] as const;
+
+export const MINIMAL_MINER_ABI = [
+  { name: 'ritualMint', type: 'function', inputs: [], outputs: [], stateMutability: 'nonpayable' },
 ] as const;

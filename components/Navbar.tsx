@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAccount, useConnect, useDisconnect, useChainId } from 'wagmi';
-import { Wallet, LogOut, ShieldCheck, Zap, Languages } from 'lucide-react';
+import { Wallet, LogOut, ShieldCheck, Zap, Languages, Pickaxe } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
 import { motion } from 'framer-motion';
 
@@ -25,6 +25,8 @@ export const Navbar: React.FC = () => {
       staking: "Ritual Stake",
       marketplace: "Nexus Market",
       gallery: "Gallery",
+      forge: "The Forge",
+      mining: "Energy Mine",
       logs: "Logs",
       identify: "Identify Ritualist"
     },
@@ -33,6 +35,8 @@ export const Navbar: React.FC = () => {
       staking: "การสเตก",
       marketplace: "ตลาดเน็กซัส",
       gallery: "แกลเลอรี",
+      forge: "โรงตีเหล็ก",
+      mining: "ขุดพลังงาน",
       logs: "ประวัติ",
       identify: "ยืนยันตัวตน"
     }
@@ -55,6 +59,8 @@ export const Navbar: React.FC = () => {
 
         <div className="hidden lg:flex items-center gap-8 font-mono text-xs uppercase tracking-widest">
           <NavLink to="/" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.dashboard}</NavLink>
+          <NavLink to="/mining" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.mining}</NavLink>
+          <NavLink to="/mint" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.forge}</NavLink>
           <NavLink to="/staking" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.staking}</NavLink>
           <NavLink to="/marketplace" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.marketplace}</NavLink>
           <NavLink to="/gallery" className={({ isActive }) => isActive ? activeStyle : inactiveStyle}>{t.gallery}</NavLink>
@@ -62,7 +68,6 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Language Toggle */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
