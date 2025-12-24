@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
-import { ADRS, MINIMAL_MINER_ABI } from "@/lib/contracts";
-import { useAppState } from '../context/useAppState';
+// 🟢 แก้ไข: เพิ่ม ABI ที่จำเป็นต้องใช้ในหน้านี้ให้ครบ
+import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from "@/lib/contracts";
+import { useAppState } from '@/context/useAppState'; // ใช้ @ เพื่อความชัวร์
 import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
 
 const StakingPage: React.FC = () => {
@@ -33,6 +33,14 @@ const StakingPage: React.FC = () => {
     functionName: 'allowance',
     args: address ? [address, ADRS.staking as `0x${string}`] : undefined,
     query: { enabled: !!address }
+  });
+  
+  const { data: earned, refetch: refetchEarned } = useReadContract({
+    address: ADRS.staking as `0x${string}`,
+    abi: MINIMAL_STAKING_ABI,
+    functionName: 'earned',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 5000 }
   });
 
   const { writeContractAsync } = useWriteContract();
