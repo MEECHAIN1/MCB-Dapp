@@ -1,13 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path'; // ต้องมั่นใจว่ามี @types/node
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // 🟢 เชื่อมโยง @/ ให้ชี้ไปที่โฟลเดอร์โปรเจกต์ (หรือ src) ตามที่ตั้งไว้ใน tsconfig
-      '@': path.resolve(__dirname, './'), 
+      // เชื่อมโยง @/ ให้ชี้ไปที่ Root ตาม tsconfig
+      '@': path.resolve(__dirname, './'),
     },
   },
   server: {
@@ -17,20 +17,14 @@ export default defineConfig({
     allowedHosts: true
   },
   define: {
-    // 🟢 แนะนำให้ใช้ VITE_ นำหน้าเพื่อให้ตรงกับมาตรฐานของ Vite
     'process.env.API_KEY': JSON.stringify(process.env.VITE_API_KEY || process.env.API_KEY || ''),
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
-    // ⚠️ หากคุณยังไม่มี terser ในเครื่อง ให้ใช้ 'esbuild' แทนเพื่อไม่ให้ build พัง
-    minify: 'build',
+    // ใช้ esbuild แทน terser เพื่อความเร็วและไม่ต้องติดตั้ง dependency เพิ่ม
+    minify: 'esbuild', 
     chunkSizeWarningLimit: 1000,
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -41,4 +35,5 @@ export default defineConfig({
         }
       }
     }
-};
+  }
+});
