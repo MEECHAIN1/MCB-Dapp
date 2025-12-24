@@ -19,7 +19,7 @@ import { useAppState } from './context/useAppState';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
-const TARGET_CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID || 222222); 
+const TARGET_CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID || 1337); 
 
 const GlobalManager: React.FC = () => {
   const { pathname } = useLocation();
