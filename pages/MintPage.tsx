@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 import { ADRS, MINIMAL_NFT_ABI } from '../lib/contracts';
 import { useAppState } from '../context/useAppState';
 import { motion, AnimatePresence } from 'framer-motion';
-// Fixed: Added missing 'Activity' icon to the lucide-react import list.
 import { Hammer, Sparkles, Cpu, Shield, Zap, Loader2, CheckCircle2, Terminal, Activity } from 'lucide-react';
 import { GoogleGenAI, Type } from "@google/genai";
 
@@ -15,17 +15,14 @@ interface BotSoul {
 }
 
 const MintPage: React.FC = () => {
-  const { address, isConnected } = useAccount();
-  const { setLoading, setError, triggerSuccess, setTxHash, language } = useAppState();
+  const { address } = useAccount();
+  const { executeRitual, language, isLoading } = useAppState();
   const [soul, setSoul] = useState<BotSoul | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [ritualStep, setRitualStep] = useState<'idle' | 'consulting' | 'soul-bound' | 'forging' | 'completed'>('idle');
 
-  const { writeContractAsync, data: mintHash } = useWriteContract();
-  const { isLoading: isTxLoading, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: mintHash });
+  const { writeContractAsync } = useWriteContract();
 
   const generateSoul = async () => {
-    setIsGenerating(true);
     setRitualStep('consulting');
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
@@ -51,43 +48,29 @@ const MintPage: React.FC = () => {
       setSoul(data);
       setRitualStep('soul-bound');
     } catch (err: any) {
-      setError("Oracle communication failed: " + err.message);
       setRitualStep('idle');
-    } finally {
-      setIsGenerating(false);
     }
   };
 
   const forgeBot = async () => {
     if (!address || !soul) return;
-    setLoading(true);
     setRitualStep('forging');
+    
     try {
-      // In a real app, you'd upload this metadata to IPFS first
-      const metadataUri = `data:application/json;base64,${btoa(JSON.stringify(soul))}`;
-      
-      const hash = await writeContractAsync({
-        address: ADRS.nft as `0x${string}`,
-        abi: MINIMAL_NFT_ABI,
-        functionName: 'safeMint',
-        args: [address, metadataUri],
+      await executeRitual(async () => {
+        const metadataUri = `data:application/json;base64,${btoa(JSON.stringify(soul))}`;
+        return await writeContractAsync({
+          address: ADRS.nft as `0x${string}`,
+          abi: MINIMAL_NFT_ABI,
+          functionName: 'safeMint',
+          args: [address, metadataUri],
+        });
       });
-      setTxHash(hash);
+      setRitualStep('completed');
     } catch (err: any) {
-      setError(err.shortMessage || err.message);
       setRitualStep('soul-bound');
-    } finally {
-      setLoading(false);
     }
   };
-
-  // Reset after success
-  React.useEffect(() => {
-    if (isTxSuccess) {
-      triggerSuccess();
-      setRitualStep('completed');
-    }
-  }, [isTxSuccess, triggerSuccess]);
 
   const t = {
     EN: {
@@ -119,6 +102,8 @@ const MintPage: React.FC = () => {
       completed: "พิธีกรรมเสร็จสมบูรณ์ ยูนิตถูกเพิ่มเข้าสู่กองทัพแล้ว"
     }
   }[language];
+
+  const isGenerating = ritualStep === 'consulting';
 
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-24 relative">
@@ -167,11 +152,11 @@ const MintPage: React.FC = () => {
                 <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest mt-1">{t.forgeDesc}</p>
                 <button
                   onClick={forgeBot}
-                  disabled={ritualStep !== 'soul-bound' || isTxLoading}
+                  disabled={ritualStep !== 'soul-bound' || isLoading}
                   className="mt-6 w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-500 transition-all disabled:opacity-30 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(79,70,229,0.3)]"
                 >
-                  {isTxLoading ? <Loader2 className="animate-spin" size={20} /> : <Shield size={20} />}
-                  {isTxLoading ? "Forging..." : "Commit Ritual"}
+                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Shield size={20} />}
+                  {isLoading ? "Forging..." : "Commit Ritual"}
                 </button>
               </div>
             </div>

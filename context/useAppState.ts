@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { writeContract, waitForTransactionReceipt } from '@wagmi/core';
 import { config } from '../lib/wagmiConfig';
@@ -17,6 +18,7 @@ interface AppState {
   triggerSuccess: () => void;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
+  executeRitual: (action: () => Promise<`0x${string}`>) => Promise<void>;
   initiateManualRitual: () => Promise<void>;
   reset: () => void;
 }
@@ -37,33 +39,33 @@ export const useAppState = create<AppState>((set, get) => ({
   setLanguage: (lang) => set({ language: lang }),
   toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
   
-  initiateManualRitual: async () => {
-    const { language } = get();
-    set({ isLoading: true, error: null, txHash: null });
+  // Generic helper for any blockchain transaction
+  executeRitual: async (action) => {
+    const { language, triggerSuccess } = get();
+    set({ isLoading: true, error: null, txHash: null, ritualSuccess: false });
     
     try {
-      // 🔮 1. ส่งคำขอทำพิธีขุดไปยัง MeeChain
-      const hash = await writeContract(config, {
+      const hash = await action();
+      set({ txHash: hash });
+      
+      await waitForTransactionReceipt(config, { hash });
+      triggerSuccess();
+    } catch (err: any) {
+      console.error("Ritual Execution Error:", err);
+      const msg = err.shortMessage || err.message || (language === 'EN' ? "Ritual failed" : "พิธีกรรมล้มเหลว");
+      set({ error: msg, isLoading: false });
+      throw err; // Re-throw to allow local component handling if needed
+    }
+  },
+
+  initiateManualRitual: async () => {
+    return get().executeRitual(() => 
+      writeContract(config, {
         address: ADRS.miner as `0x${string}`,
         abi: MINIMAL_MINER_ABI,
         functionName: 'ritualMint',
-      });
-
-      set({ txHash: hash });
-
-      // ⏳ 2. รอการยืนยันบล็อก
-      await waitForTransactionReceipt(config, { hash });
-
-      // 🎉 3. สำเร็จ!
-      get().triggerSuccess();
-      
-    } catch (err: any) {
-      console.error("Ritual Failed:", err);
-      set({ 
-        error: err.shortMessage || (language === 'EN' ? "Energy flux failure: Ritual failed" : "กระแสพลังงานขัดข้อง: พิธีกรรมล้มเหลว"), 
-        isLoading: false 
-      });
-    }
+      })
+    );
   },
 
   reset: () => set({ isLoading: false, error: null, txHash: null, ritualSuccess: false }),

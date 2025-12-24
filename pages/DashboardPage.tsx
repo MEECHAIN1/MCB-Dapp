@@ -1,10 +1,10 @@
 
-import React, { useEffect } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import React from 'react';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { formatUnits } from 'viem';
-import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
-import { Coins, Layers, TrendingUp, Shield, Binary, Sparkles, Plus, ShoppingBag } from 'lucide-react';
+import { Coins, Layers, TrendingUp, Shield, Binary, Plus, ShoppingBag } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
 import { QuantumHUD } from '../components/QuantumHUD';
 import { QuantumRitual } from '../components/QuantumRitual';
@@ -36,9 +36,9 @@ const StatCard = ({ title, value, unit, icon: Icon, color }: any) => (
 
 const DashboardPage: React.FC = () => {
   const { address, isConnected } = useAccount();
-  const { setLoading, setError, triggerSuccess, setTxHash } = useAppState();
+  const { executeRitual } = useAppState();
 
-  const { data: tokenBalance, isLoading: isTokenLoading, refetch: refetchToken } = useReadContract({
+  const { data: tokenBalance } = useReadContract({
     address: ADRS.token as `0x${string}`,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'balanceOf',
@@ -46,7 +46,7 @@ const DashboardPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: nftBalance, isLoading: isNftLoading, refetch: refetchNft } = useReadContract({
+  const { data: nftBalance } = useReadContract({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
     functionName: 'balanceOf',
@@ -54,33 +54,18 @@ const DashboardPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { writeContractAsync, data: mintHash, isPending: isMintPending } = useWriteContract();
-  const { isLoading: isTxLoading, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: mintHash });
-
-  useEffect(() => {
-    setLoading(isTokenLoading || isNftLoading || isMintPending || isTxLoading);
-  }, [isTokenLoading, isNftLoading, isMintPending, isTxLoading, setLoading]);
-
-  useEffect(() => {
-    if (isTxSuccess) {
-      triggerSuccess();
-      refetchNft();
-    }
-  }, [isTxSuccess, triggerSuccess, refetchNft]);
+  const { writeContractAsync } = useWriteContract();
 
   const handleAcquisition = async () => {
     if (!address) return;
-    try {
-      const hash = await writeContractAsync({
+    await executeRitual(() => 
+      writeContractAsync({
         address: ADRS.nft as `0x${string}`,
         abi: MINIMAL_NFT_ABI,
         functionName: 'safeMint',
         args: [address, "ipfs://bot-telemetry-nexus"],
-      });
-      setTxHash(hash);
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-    }
+      })
+    );
   };
 
   return (
@@ -120,7 +105,6 @@ const DashboardPage: React.FC = () => {
             <div className="flex gap-4">
               <button 
                 onClick={handleAcquisition}
-                disabled={isMintPending || isTxLoading}
                 className="bg-yellow-500 text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-yellow-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.2)]"
               >
                 <Plus size={16} /> Synchronize New Unit
@@ -177,7 +161,6 @@ const DashboardPage: React.FC = () => {
                 <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Protocol</p>
                 <p className="text-sm font-black text-white uppercase italic">MCB-Core</p>
               </div>
-              {/* Added simulated fleet health */}
               <div className="space-y-1 hidden lg:block">
                 <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Fleet Integrity</p>
                 <p className="text-sm font-black text-white uppercase italic">100% Active</p>

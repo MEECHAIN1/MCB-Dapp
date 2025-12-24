@@ -1,19 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import React, { useState } from 'react';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from '../lib/contracts';
 import { useAppState } from '../context/useAppState';
-import { motion } from 'framer-motion';
-import { Wallet, ArrowDownToLine, Gift, Ban } from 'lucide-react';
+import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
 
 const StakingPage: React.FC = () => {
   const { address } = useAccount();
-  const { setLoading, setError, triggerSuccess, setTxHash } = useAppState();
+  const { executeRitual, isLoading } = useAppState();
   const [stakeAmount, setStakeAmount] = useState('');
 
-  // Contract Reads
-  const { data: earned, refetch: refetchEarned, isLoading: isEarnedLoading } = useReadContract({
+  const { data: earned, refetch: refetchEarned } = useReadContract({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
     functionName: 'earned',
@@ -21,7 +19,7 @@ const StakingPage: React.FC = () => {
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: stakedBalance, refetch: refetchStaked, isLoading: isStakedLoading } = useReadContract({
+  const { data: stakedBalance, refetch: refetchStaked } = useReadContract({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
     functionName: 'balanceOf' as any,
@@ -29,7 +27,7 @@ const StakingPage: React.FC = () => {
     query: { enabled: !!address }
   });
 
-  const { data: allowance, refetch: refetchAllowance, isLoading: isAllowanceLoading } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: ADRS.token as `0x${string}`,
     abi: MINIMAL_ERC20_ABI,
     functionName: 'allowance',
@@ -37,69 +35,53 @@ const StakingPage: React.FC = () => {
     query: { enabled: !!address }
   });
 
-  const { writeContractAsync, data: hash, isPending: isWritePending } = useWriteContract();
-  
-  const { isLoading: isTxLoading, isSuccess: isTxSuccess, isError: isTxError, error: txError } = useWaitForTransactionReceipt({ hash });
-
-  // Sync transaction lifecycle and initial data fetching with global app state
-  useEffect(() => {
-    setLoading(isTxLoading || isWritePending || isEarnedLoading || isStakedLoading || isAllowanceLoading);
-  }, [isTxLoading, isWritePending, isEarnedLoading, isStakedLoading, isAllowanceLoading, setLoading]);
-
-  useEffect(() => {
-    if (isTxSuccess) {
-      triggerSuccess();
-      setLoading(false);
-      refetchEarned();
-      refetchAllowance();
-      refetchStaked?.();
-      setStakeAmount('');
-    }
-  }, [isTxSuccess, triggerSuccess, setLoading, refetchEarned, refetchAllowance, refetchStaked]);
-
-  useEffect(() => {
-    if (isTxError && txError) {
-      setError(txError.message);
-    }
-  }, [isTxError, txError, setError]);
+  const { writeContractAsync } = useWriteContract();
 
   const handleAction = async (type: 'stake' | 'claim' | 'withdraw' | 'approve') => {
     if (!address) return;
-    setLoading(true);
-    try {
-      let resultHash;
+    
+    await executeRitual(async () => {
+      let hash: `0x${string}`;
       if (type === 'approve') {
-        resultHash = await writeContractAsync({
+        hash = await writeContractAsync({
           address: ADRS.token as `0x${string}`,
           abi: MINIMAL_ERC20_ABI,
           functionName: 'approve',
           args: [ADRS.staking as `0x${string}`, parseUnits(stakeAmount || '1000000000', 18)],
         });
       } else if (type === 'stake') {
-        resultHash = await writeContractAsync({
+        hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
           functionName: 'stake',
           args: [parseUnits(stakeAmount, 18)],
         });
       } else if (type === 'claim') {
-        resultHash = await writeContractAsync({
+        hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
           functionName: 'getReward',
         });
-      } else if (type === 'withdraw') {
-        resultHash = await writeContractAsync({
+      } else {
+        hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
           functionName: 'withdraw',
           args: [stakedBalance || 0n] as any,
         });
       }
-      setTxHash(resultHash || null);
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-      setLoading(false);
+      return hash;
+    });
+
+    // Cleanup & Refresh
+    if (type === 'stake' || type === 'approve') {
+      refetchAllowance();
+      refetchStaked?.();
+      setStakeAmount('');
+    } else if (type === 'claim') {
+      refetchEarned();
+    } else {
+      refetchStaked?.();
     }
   };
 
@@ -133,20 +115,26 @@ const StakingPage: React.FC = () => {
                 placeholder="0.00"
                 className="w-full bg-black border border-zinc-800 rounded-xl p-4 font-mono text-xl focus:border-yellow-500 focus:outline-none transition-colors"
               />
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-yellow-500 uppercase hover:text-yellow-400">MAX</button>
+              <button 
+                onClick={() => setStakeAmount('1000')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-yellow-500 uppercase hover:text-yellow-400"
+              >
+                MAX
+              </button>
             </div>
           </div>
 
           {needsApproval ? (
             <button 
               onClick={() => handleAction('approve')}
+              disabled={isLoading}
               className="w-full bg-zinc-100 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
             >
               Authorize MCB Flow
             </button>
           ) : (
             <button 
-              disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isWritePending}
+              disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isLoading}
               onClick={() => handleAction('stake')}
               className="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(234,179,8,0.2)]"
             >
@@ -173,7 +161,7 @@ const StakingPage: React.FC = () => {
           </div>
 
           <button 
-            disabled={!earned || earned === 0n || isWritePending}
+            disabled={!earned || earned === 0n || isLoading}
             onClick={() => handleAction('claim')}
             className="w-full border-2 border-green-500/50 text-green-500 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all disabled:opacity-30 disabled:border-zinc-800 disabled:text-zinc-700"
           >
@@ -192,7 +180,8 @@ const StakingPage: React.FC = () => {
         </div>
         <button 
           onClick={() => handleAction('withdraw')}
-          className="text-zinc-400 hover:text-white font-mono text-xs uppercase underline tracking-widest transition-colors"
+          disabled={isLoading}
+          className="text-zinc-400 hover:text-white font-mono text-xs uppercase underline tracking-widest transition-colors disabled:opacity-30"
         >
           Withdraw All
         </button>

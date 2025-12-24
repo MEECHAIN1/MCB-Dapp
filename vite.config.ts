@@ -11,18 +11,30 @@ export default defineConfig({
     allowedHosts: true
   },
   define: {
-    // Gemini API requires process.env.API_KEY to be available
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
+    // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
+    // into the bundled code as process.env.API_KEY
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || process.env.VITE_API_KEY || ''),
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
+    chunkSizeWarningLimit: 1000,
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
       },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-web3': ['wagmi', 'viem', '@wagmi/core', '@tanstack/react-query'],
+          'vendor-ui': ['framer-motion', 'lucide-react', 'canvas-confetti'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei']
+        }
+      }
     }
   },
 });

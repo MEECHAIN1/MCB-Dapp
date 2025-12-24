@@ -1,13 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseUnits, formatUnits, Address } from 'viem';
+import React, { useState } from 'react';
+import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { formatUnits, Address } from 'viem';
 import { ADRS, MINIMAL_MARKETPLACE_ABI } from '../lib/contracts';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Tag, Search, Cpu, ShieldCheck, XCircle, Zap, Activity, BarChart3 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ShoppingBag, Search, Cpu, ShieldCheck, XCircle, Zap, Activity, BarChart3 } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
 
-// Simulation for demo purposes - in a real app these would be dynamic
 const DISCOVERY_BOT_IDS = [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n];
 
 const MarketplaceStat = ({ label, value, icon: Icon }: any) => (
@@ -24,8 +23,8 @@ const MarketplaceStat = ({ label, value, icon: Icon }: any) => (
 
 const BotListingCard: React.FC<{ 
   tokenId: bigint, 
-  onBuy: (id: bigint, price: bigint) => void | Promise<void>,
-  onCancel: (id: bigint) => void | Promise<void>,
+  onBuy: (id: bigint, price: bigint) => Promise<void>,
+  onCancel: (id: bigint) => Promise<void>,
   currentAccount?: Address 
 }> = ({ tokenId, onBuy, onCancel, currentAccount }) => {
   const { data: listing, isLoading } = useReadContract({
@@ -104,58 +103,36 @@ const BotListingCard: React.FC<{
 
 const MarketplacePage: React.FC = () => {
   const { address } = useAccount();
-  const { setLoading, setError, triggerSuccess, setTxHash } = useAppState();
+  const { executeRitual, setError } = useAppState();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { writeContractAsync, data: hash, isPending: isWritePending } = useWriteContract();
-  const { isLoading: isTxLoading, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash });
-
-  useEffect(() => {
-    setLoading(isWritePending || isTxLoading);
-  }, [isWritePending, isTxLoading, setLoading]);
-
-  useEffect(() => {
-    if (isTxSuccess) {
-      triggerSuccess();
-      setLoading(false);
-    }
-  }, [isTxSuccess, triggerSuccess, setLoading]);
+  const { writeContractAsync } = useWriteContract();
 
   const handleBuy = async (tokenId: bigint, price: bigint) => {
     if (!address) {
       setError("Synchronize your signature to perform this trade.");
       return;
     }
-    setLoading(true);
-    try {
-      const resultHash = await writeContractAsync({
+    await executeRitual(() => 
+      writeContractAsync({
         address: ADRS.marketplace as `0x${string}`,
         abi: MINIMAL_MARKETPLACE_ABI,
         functionName: 'buyNFT',
         args: [tokenId],
         value: price,
-      });
-      setTxHash(resultHash);
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-      setLoading(false);
-    }
+      })
+    );
   };
 
   const handleCancel = async (tokenId: bigint) => {
-    setLoading(true);
-    try {
-      const resultHash = await writeContractAsync({
+    await executeRitual(() => 
+      writeContractAsync({
         address: ADRS.marketplace as `0x${string}`,
         abi: MINIMAL_MARKETPLACE_ABI,
         functionName: 'cancelListing',
         args: [tokenId],
-      });
-      setTxHash(resultHash);
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-      setLoading(false);
-    }
+      })
+    );
   };
 
   return (
@@ -184,7 +161,6 @@ const MarketplacePage: React.FC = () => {
         </div>
       </header>
 
-      {/* Market Statistics Bar */}
       <div className="flex flex-col md:flex-row gap-6">
         <MarketplaceStat label="Floor Ritual Energy" value="125 MCB" icon={Zap} />
         <MarketplaceStat label="Total Volume" value="48.2K MCB" icon={BarChart3} />
@@ -202,7 +178,6 @@ const MarketplacePage: React.FC = () => {
             <h3 className="text-white font-black uppercase italic tracking-tight text-2xl">Nexus Security Protocol</h3>
             <p className="text-zinc-400 text-xs font-mono uppercase tracking-[0.2em] max-w-2xl leading-relaxed">
               All trades are non-custodial and validated through the MeeChain Core. 
-              Bot ownership is cryptographically transferred upon ritual completion.
             </p>
           </div>
         </div>
@@ -217,17 +192,6 @@ const MarketplacePage: React.FC = () => {
               currentAccount={address} 
             />
           ))}
-          
-          <div className="col-span-full py-40 border-2 border-dashed border-zinc-800/50 rounded-[3rem] flex flex-col items-center justify-center space-y-8 bg-zinc-950/30">
-            <div className="relative">
-               <Tag size={80} className="text-zinc-900" />
-               <div className="absolute inset-0 bg-yellow-500/5 blur-3xl rounded-full" />
-            </div>
-            <div className="text-center space-y-3">
-              <p className="text-zinc-500 font-mono text-xs uppercase tracking-[0.6em]">Listening for transmissions...</p>
-              <p className="text-zinc-700 text-[10px] font-mono uppercase tracking-widest italic">Scanning the peer-to-peer ritual nexus for new asset listings.</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
