@@ -3,7 +3,7 @@ import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 // 🟢 แก้ไข: เพิ่ม ABI ที่จำเป็นต้องใช้ในหน้านี้ให้ครบ
 import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from "@/lib/contracts";
-import { useAppState } from '@/context/useAppState'; // ใช้ @ เพื่อความชัวร์
+import { useAppState } from '@/context/useAppState';
 import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
 
 const StakingPage: React.FC = () => {
@@ -34,14 +34,6 @@ const StakingPage: React.FC = () => {
     args: address ? [address, ADRS.staking as `0x${string}`] : undefined,
     query: { enabled: !!address }
   });
-  
-  const { data: earned, refetch: refetchEarned } = useReadContract({
-    address: ADRS.staking as `0x${string}`,
-    abi: MINIMAL_STAKING_ABI,
-    functionName: 'earned',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 5000 }
-  });
 
   const { writeContractAsync } = useWriteContract();
 
@@ -51,18 +43,21 @@ const StakingPage: React.FC = () => {
     await executeRitual(async () => {
       let hash: `0x${string}`;
       if (type === 'approve') {
+        // ถ้า stakeAmount ว่าง ใช้ค่าขนาดใหญ่เป็น fallback เพื่อไม่ต้องเรียก approve เล็กบ่อย ๆ
+        const amountToApprove = parseUnits(stakeAmount || '1000000000', 18);
         hash = await writeContractAsync({
           address: ADRS.token as `0x${string}`,
           abi: MINIMAL_ERC20_ABI,
           functionName: 'approve',
-          args: [ADRS.staking as `0x${string}`, parseUnits(stakeAmount || '1000000000', 18)],
+          args: [ADRS.staking as `0x${string}`, amountToApprove],
         });
       } else if (type === 'stake') {
+        const stakeValue = parseUnits(stakeAmount, 18);
         hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
           functionName: 'stake',
-          args: [parseUnits(stakeAmount, 18)],
+          args: [stakeValue],
         });
       } else if (type === 'claim') {
         hash = await writeContractAsync({
@@ -71,6 +66,7 @@ const StakingPage: React.FC = () => {
           functionName: 'getReward',
         });
       } else {
+        // withdraw all (ใช้ stakedBalance ถ้ามี)
         hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
@@ -83,17 +79,18 @@ const StakingPage: React.FC = () => {
 
     // Cleanup & Refresh
     if (type === 'stake' || type === 'approve') {
-      refetchAllowance();
+      refetchAllowance?.();
       refetchStaked?.();
       setStakeAmount('');
     } else if (type === 'claim') {
-      refetchEarned();
+      refetchEarned?.();
     } else {
       refetchStaked?.();
     }
   };
 
-  const needsApproval = stakeAmount && allowance !== undefined && allowance < parseUnits(stakeAmount, 18);
+  // ตรวจสอบว่า allowance เพียงพอหรือไม่ (ตรวจเฉพาะเวลา user ใส่ stakeAmount)
+  const needsApproval = !!stakeAmount && allowance !== undefined && allowance < parseUnits(stakeAmount, 18);
 
   return (
     <div className="max-w-4xl mx-auto space-y-12">
@@ -102,18 +99,7 @@ const StakingPage: React.FC = () => {
         <p className="text-zinc-500 font-mono text-sm uppercase tracking-[0.3em]">Sacrifice tokens to receive the MCB blessing</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Stake Panel */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col gap-6">
-          <div>
-            <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
-              <ArrowDownToLine className="text-yellow-500" />
-              Sacrifice MCB
-            </h3>
-            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Enhance your nexus influence</p>
-          </div>
-
-          <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-
             <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Tokens to Stake</label>
             <div className="relative">
               <input 
