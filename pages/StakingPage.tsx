@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
-// 🟢 แก้ไข: เพิ่ม ABI ที่จำเป็นต้องใช้ในหน้านี้ให้ครบ
 import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from "@/lib/contracts";
 import { useAppState } from '@/context/useAppState';
 import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
@@ -39,11 +38,10 @@ const StakingPage: React.FC = () => {
 
   const handleAction = async (type: 'stake' | 'claim' | 'withdraw' | 'approve') => {
     if (!address) return;
-    
+
     await executeRitual(async () => {
       let hash: `0x${string}`;
       if (type === 'approve') {
-        // ถ้า stakeAmount ว่าง ใช้ค่าขนาดใหญ่เป็น fallback เพื่อไม่ต้องเรียก approve เล็กบ่อย ๆ
         const amountToApprove = parseUnits(stakeAmount || '1000000000', 18);
         hash = await writeContractAsync({
           address: ADRS.token as `0x${string}`,
@@ -66,7 +64,6 @@ const StakingPage: React.FC = () => {
           functionName: 'getReward',
         });
       } else {
-        // withdraw all (ใช้ stakedBalance ถ้ามี)
         hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
@@ -77,7 +74,6 @@ const StakingPage: React.FC = () => {
       return hash;
     });
 
-    // Cleanup & Refresh
     if (type === 'stake' || type === 'approve') {
       refetchAllowance?.();
       refetchStaked?.();
@@ -89,7 +85,6 @@ const StakingPage: React.FC = () => {
     }
   };
 
-  // ตรวจสอบว่า allowance เพียงพอหรือไม่ (ตรวจเฉพาะเวลา user ใส่ stakeAmount)
   const needsApproval = !!stakeAmount && allowance !== undefined && allowance < parseUnits(stakeAmount, 18);
 
   return (
@@ -99,17 +94,27 @@ const StakingPage: React.FC = () => {
         <p className="text-zinc-500 font-mono text-sm uppercase tracking-[0.3em]">Sacrifice tokens to receive the MCB blessing</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col gap-6">
+          <div>
+            <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
+              <ArrowDownToLine className="text-yellow-500" />
+              Sacrifice MCB
+            </h3>
+            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Enhance your nexus influence</p>
+          </div>
+
+          <div className="space-y-2">
             <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Tokens to Stake</label>
             <div className="relative">
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={stakeAmount}
                 onChange={(e) => setStakeAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full bg-black border border-zinc-800 rounded-xl p-4 font-mono text-xl focus:border-yellow-500 focus:outline-none transition-colors"
               />
-              <button 
+              <button
                 onClick={() => setStakeAmount('1000')}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-yellow-500 uppercase hover:text-yellow-400"
               >
@@ -117,6 +122,74 @@ const StakingPage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {needsApproval ? (
+            <button
+              onClick={() => handleAction('approve')}
+              disabled={isLoading}
+              className="w-full bg-zinc-100 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+            >
+              Authorize MCB Flow
+            </button>
+          ) : (
+            <button
+              disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isLoading}
+              onClick={() => handleAction('stake')}
+              className="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(234,179,8,0.15)]"
+            >
+              Initiate Stake
+            </button>
+          )}
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col justify-between">
+          <div>
+            <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
+              <Gift className="text-green-500" />
+              Manifested
+            </h3>
+            <p className="text-zinc-500 font-mono text-[10px] uppercase mt-1">Pending blessings from the Nexus</p>
+          </div>
+
+          <div className="py-8 text-center">
+            <p className="text-5xl font-black text-white mb-2">
+              {earned ? parseFloat(formatUnits(earned, 18)).toFixed(4) : "0.0000"}
+            </p>
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-[0.2em]">MCB Rewards Earned</p>
+          </div>
+
+          <button
+            disabled={!earned || earned === 0n || isLoading}
+            onClick={() => handleAction('claim')}
+            className="w-full border-2 border-green-500/50 text-green-500 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all disabled:opacity-50"
+          >
+            Claim Blessing
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Ban className="text-red-500" />
+          <div className="text-left">
+            <h4 className="text-xs font-bold uppercase">Exit Nexus</h4>
+            <p className="text-[10px] text-zinc-500 font-mono uppercase">Recover your MCB assets</p>
+          </div>
+        </div>
+        <button
+          onClick={() => handleAction('withdraw')}
+          disabled={isLoading}
+          className="text-zinc-400 hover:text-white font-mono text-xs uppercase underline tracking-widest transition-colors disabled:opacity-30"
+        >
+          Withdraw All
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default StakingPage;              </button>
+             </button>       </div>
 
           {needsApproval ? (
             <button 
