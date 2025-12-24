@@ -86,7 +86,7 @@ export default function MiningPage() {
               <motion.div 
                 initial={{ height: "0%" }}
                 animate={{ height: "100%" }}
-                transition={{ duration: 10, ease: "linear" }}
+                transition={{ duration: 5, ease: "easeInOut" }}
                 className="absolute bottom-0 left-0 right-0 bg-yellow-500/10 -z-10"
               />
             )}

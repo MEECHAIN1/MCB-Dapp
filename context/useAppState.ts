@@ -39,10 +39,11 @@ export const useAppState = create<AppState>((set, get) => ({
   toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
   
   initiateManualRitual: async () => {
+    const { language } = get();
     set({ isLoading: true, error: null, txHash: null });
     
     try {
-      // 🔮 1. Initiate Ritual Transaction
+      // 🔮 1. ส่งคำขอทำพิธีขุดไปยัง MeeChain
       const hash = await writeContract(config, {
         address: ADRS.miner as `0x${string}`,
         abi: MINIMAL_MINER_ABI,
@@ -51,16 +52,16 @@ export const useAppState = create<AppState>((set, get) => ({
 
       set({ txHash: hash });
 
-      // ⏳ 2. Wait for confirmation
+      // ⏳ 2. รอการยืนยันบล็อก
       await waitForTransactionReceipt(config, { hash });
 
-      // 🎉 3. Success! Trigger global celebration
+      // 🎉 3. สำเร็จ!
       get().triggerSuccess();
       
     } catch (err: any) {
-      console.error("Ritual Interrupted:", err);
+      console.error("Ritual Failed:", err);
       set({ 
-        error: err.shortMessage || (get().language === 'EN' ? "Ritual energy flux error: Process failed" : "กระแสพลังงานขัดข้อง: พิธีกรรมล้มเหลว"), 
+        error: err.shortMessage || (language === 'EN' ? "Energy flux failure: Ritual failed" : "กระแสพลังงานขัดข้อง: พิธีกรรมล้มเหลว"), 
         isLoading: false 
       });
     }

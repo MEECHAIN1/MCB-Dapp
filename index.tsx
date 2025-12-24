@@ -8,13 +8,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// Global polyfill for process.env to ensure SDK compatibility in Vite/ESM environments.
-// This prevents 'Uncaught ReferenceError: process is not defined'.
-// Fix: Use type assertion on window to resolve "Property 'process' does not exist on type 'Window & typeof globalThis'" error.
+// Global polyfill for process.env to ensure SDK compatibility.
+// Vite replaces process.env.API_KEY during build, but this ensures runtime safety.
 if (typeof window !== 'undefined' && !(window as any).process) {
   (window as any).process = { 
     env: { 
-      API_KEY: (import.meta as any).env?.VITE_GEMINI_API_KEY || '' 
+      API_KEY: process.env.API_KEY || '' 
     } 
   };
 }
