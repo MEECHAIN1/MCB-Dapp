@@ -7,6 +7,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import './index.tsx';
 
 // Global polyfill for process.env to ensure SDK compatibility.
 // Vite replaces process.env.API_KEY during build, but this ensures runtime safety.
