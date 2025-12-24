@@ -1,23 +1,15 @@
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { http } from "wagmi";
+import { meeChain } from "../meeChain"; // ✅ เชื่อมกับไฟล์ลงทะเบียน Chain ของคุณ
+import { mainnet } from "wagmi/chains";
 
-import { createConfig, http } from 'wagmi';
-import { localhost } from 'viem/chains';
-
-const chainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 1337);
-const rpcUrl = (import.meta as any).env?.VITE_RPC_URL || 'http://127.0.0.1:9545';
-
-const meeChain = {
-  ...localhost,
-  id: chainId,
-  name: (import.meta as any).env?.VITE_CHAIN_NAME || 'MeeChain',
-  rpcUrls: {
-    default: { http: [rpcUrl] },
-    public: { http: [rpcUrl] },
-  },
-};
-
-export const config = createConfig({
-  chains: [meeChain],
+export const config = getDefaultConfig({
+  appName: "MeeBot Ritual",
+  projectId: "b0d81328f8ab0541fdede7db9ff25cb1", // ✅ นี่คือ ID ที่คุณลงทะเบียนไว้
+  chains: [meeChain, mainnet], // ✅ เพิ่ม MeeChain เข้าไปในรายการที่รองรับ
   transports: {
-    [meeChain.id]: http(),
+    [meeChain.id]: http(), // ✅ ใช้ RPC ตามที่ตั้งค่าใน meeChain.ts
+    [mainnet.id]: http(),
   },
+  ssr: false,
 });
