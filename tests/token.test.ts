@@ -4,80 +4,107 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { getTokenBalance, getTokenDecimals, getTokenSymbol, approveToken, transferToken } from '../lib/token';
-import { parseUnits } from 'viem';
-import { ADRS } from '../lib/contracts';
+import { parseUnits, PublicClient, WalletClient, Address } from 'viem';
+import { ADRS, MINIMAL_ERC20_ABI } from '../lib/contracts';
 
-describe('Token Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890';
-  const mockRecipient = '0x0987654321098765432109876543210987654321';
-  let mockPublicClient: any;
-  let mockWalletClient: any;
+describe('Token Service (MCB)', () => {
+  const mockAddress = '0x1234567890123456789012345678901234567890' as Address;
+  const mockRecipient = '0x0987654321098765432109876543210987654321' as Address;
+  
+  let mockPublicClient: Partial<PublicClient>;
+  let mockWalletClient: Partial<WalletClient>;
 
   beforeEach(() => {
-    mockPublicClient = { readContract: vi.fn() };
-    mockWalletClient = { writeContract: vi.fn() };
+    mockPublicClient = {
+      readContract: vi.fn() as Mock,
+    };
+    mockWalletClient = {
+      writeContract: vi.fn() as Mock,
+    };
+    vi.clearAllMocks();
   });
 
-  describe('Reads', () => {
-    it('getTokenBalance: fetches balance correctly', async () => {
-      mockPublicClient.readContract.mockResolvedValue(parseUnits('100', 18));
-      const balance = await getTokenBalance(mockPublicClient as any, mockAddress);
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Registry & Telemetry (Reads)', () => {
+    it('getTokenBalance: should call contract and return BigInt value', async () => {
+      const expectedBalance = parseUnits('100', 18);
+      (mockPublicClient.readContract as Mock).mockResolvedValue(expectedBalance);
+      
+      const balance = await getTokenBalance(mockPublicClient as PublicClient, mockAddress);
+      
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
         address: ADRS.token,
+        abi: MINIMAL_ERC20_ABI,
         functionName: 'balanceOf',
-        args: [mockAddress]
-      }));
-      expect(balance).toBe(parseUnits('100', 18));
+        args: [mockAddress],
+      });
+      expect(balance).toBe(expectedBalance);
     });
 
-    it('getTokenDecimals: fetches decimals correctly', async () => {
-      mockPublicClient.readContract.mockResolvedValue(18);
-      const decimals = await getTokenDecimals(mockPublicClient as any);
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+    it('getTokenDecimals: should fetch precision metadata', async () => {
+      (mockPublicClient.readContract as Mock).mockResolvedValue(18);
+      const decimals = await getTokenDecimals(mockPublicClient as PublicClient);
+      
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
         address: ADRS.token,
-        functionName: 'decimals'
-      }));
+        abi: MINIMAL_ERC20_ABI,
+        functionName: 'decimals',
+      });
       expect(decimals).toBe(18);
     });
 
-    it('getTokenSymbol: fetches symbol correctly', async () => {
-      mockPublicClient.readContract.mockResolvedValue('MCB');
-      const symbol = await getTokenSymbol(mockPublicClient as any);
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+    it('getTokenSymbol: should fetch currency designation', async () => {
+      (mockPublicClient.readContract as Mock).mockResolvedValue('MCB');
+      const symbol = await getTokenSymbol(mockPublicClient as PublicClient);
+      
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
         address: ADRS.token,
-        functionName: 'symbol'
-      }));
+        abi: MINIMAL_ERC20_ABI,
+        functionName: 'symbol',
+      });
       expect(symbol).toBe('MCB');
+    });
+
+    it('Error Handling: should propagate RPC failures', async () => {
+      (mockPublicClient.readContract as Mock).mockRejectedValue(new Error('Connection Interrupted'));
+      await expect(getTokenBalance(mockPublicClient as PublicClient, mockAddress)).rejects.toThrow('Connection Interrupted');
     });
   });
 
-  describe('Writes', () => {
-    it('approveToken: initiates approval for the staking contract correctly', async () => {
-      mockWalletClient.writeContract.mockResolvedValue('0xapprovehash');
-      const amount = parseUnits('50', 18);
-      const hash = await approveToken(mockWalletClient as any, mockAddress, amount);
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Protocol Management (Writes)', () => {
+    it('approveToken: should initiate approval ritual for the staking core', async () => {
+      const mockHash = '0xapprove_ritual_hash';
+      const amount = parseUnits('500', 18);
+      (mockWalletClient.writeContract as Mock).mockResolvedValue(mockHash);
+      
+      const hash = await approveToken(mockWalletClient as WalletClient, mockAddress, amount);
+      
+      expect(mockWalletClient.writeContract).toHaveBeenCalledWith({
         address: ADRS.token,
+        abi: MINIMAL_ERC20_ABI,
         functionName: 'approve',
         args: [ADRS.staking, amount],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xapprovehash');
+        account: mockAddress,
+      });
+      expect(hash).toBe(mockHash);
     });
 
-    it('transferToken: initiates token transfer correctly', async () => {
-      mockWalletClient.writeContract.mockResolvedValue('0xtransferhash');
+    it('transferToken: should execute token migration ritual', async () => {
+      const mockHash = '0xtransfer_ritual_hash';
       const amount = parseUnits('10', 18);
-      const hash = await transferToken(mockWalletClient as any, mockAddress, mockRecipient, amount);
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+      (mockWalletClient.writeContract as Mock).mockResolvedValue(mockHash);
+      
+      const hash = await transferToken(mockWalletClient as WalletClient, mockAddress, mockRecipient, amount);
+      
+      expect(mockWalletClient.writeContract).toHaveBeenCalledWith({
         address: ADRS.token,
+        abi: MINIMAL_ERC20_ABI,
         functionName: 'transfer',
         args: [mockRecipient, amount],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xtransferhash');
+        account: mockAddress,
+      });
+      expect(hash).toBe(mockHash);
     });
   });
 });

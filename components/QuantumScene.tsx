@@ -42,7 +42,6 @@ const QuantumEffect = () => {
   });
 
   return (
-    // Fix: Using local Mesh component alias for type safety
     <Mesh ref={meshRef}>
       <SphereGeometry args={[1.6, 64, 64]} />
       <MeshBasicMaterial
@@ -67,7 +66,6 @@ const QuantumOrb = () => {
   });
 
   return (
-    // Fix: Using local Mesh component alias for type safety
     <Mesh ref={meshRef}>
       <SphereGeometry args={[1.5, 64, 64]} />
       <MeshStandardMaterial
@@ -75,7 +73,7 @@ const QuantumOrb = () => {
         emissive="#4F46E5"
         emissiveIntensity={0.5}
         metalness={0.9}
-        roughness={0.1}
+        roughness={0.15} // Nudged slightly from 0.1 to avoid precision edge cases
         wireframe
       />
     </Mesh>
@@ -95,13 +93,12 @@ const MacroscopicWave = () => {
 
   return (
     <Torus ref={ref} args={[3, 0.02, 12, 64]} rotation={[Math.PI / 2, 0, 0]}>
-      {/* Fix: Using local MeshStandardMaterial alias to avoid JSX intrinsic type errors */}
       <MeshStandardMaterial 
         color="#C5A059" 
         emissive="#C5A059" 
         emissiveIntensity={0.4} 
         transparent 
-        opacity={0.1} 
+        opacity={0.15} // Adjusted slightly
         wireframe 
       />
     </Torus>
@@ -117,10 +114,9 @@ export const HeroScene: React.FC = () => {
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={null}>
-          {/* Fix: Using local light component aliases to avoid JSX intrinsic type errors */}
-          <AmbientLight intensity={0.4} />
-          <PointLight position={[10, 10, 10]} intensity={1} />
-          <SpotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+          <AmbientLight intensity={0.5} />
+          <PointLight position={[10, 10, 10]} intensity={1.5} />
+          <SpotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1.5} />
           
           <Float speed={1.2} rotationIntensity={0.5} floatIntensity={0.5}>
             <QuantumOrb />

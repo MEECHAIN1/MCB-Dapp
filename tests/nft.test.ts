@@ -4,75 +4,102 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll, mintBot } from '../lib/nft';
-import { ADRS } from '../lib/contracts';
+import { Address, PublicClient, WalletClient } from 'viem';
+import { ADRS, MINIMAL_NFT_ABI } from '../lib/contracts';
 
 describe('MCB-Bot Asset Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890' as const;
-  const mockOperator = '0x0987654321098765432109876543210987654321' as const;
+  const mockAddress = '0x1234567890123456789012345678901234567890' as Address;
+  const mockOperator = '0x0987654321098765432109876543210987654321' as Address;
   
-  let mockPublicClient: any;
-  let mockWalletClient: any;
+  let mockPublicClient: Partial<PublicClient>;
+  let mockWalletClient: Partial<WalletClient>;
 
   beforeEach(() => {
-    mockPublicClient = { readContract: vi.fn() };
-    mockWalletClient = { writeContract: vi.fn() };
+    mockPublicClient = {
+      readContract: vi.fn() as Mock,
+    };
+    mockWalletClient = {
+      writeContract: vi.fn() as Mock,
+    };
+    vi.clearAllMocks();
   });
 
   describe('Asset Telemetry (Reads)', () => {
-    it('getNFTBalance: should return unit count in fleet', async () => {
-      mockPublicClient.readContract.mockResolvedValue(12n);
-      const balance = await getNFTBalance(mockPublicClient, mockAddress);
+    it('getNFTBalance: should return BigInt count of owned units', async () => {
+      (mockPublicClient.readContract as Mock).mockResolvedValue(5n);
+      const balance = await getNFTBalance(mockPublicClient as PublicClient, mockAddress);
       
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
         address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
         functionName: 'balanceOf',
-        args: [mockAddress]
-      }));
-      expect(balance).toBe(12n);
+        args: [mockAddress],
+      });
+      expect(balance).toBe(5n);
     });
 
-    it('getNFTUri: should fetch cybernetic metadata pointer', async () => {
-      const uri = 'ipfs://mcb-bot-42-config';
-      mockPublicClient.readContract.mockResolvedValue(uri);
-      const result = await getNFTUri(mockPublicClient, 42n);
+    it('getNFTUri: should retrieve metadata soul pointer', async () => {
+      const uri = 'ipfs://soul-metadata-v1';
+      (mockPublicClient.readContract as Mock).mockResolvedValue(uri);
+      const result = await getNFTUri(mockPublicClient as PublicClient, 42n);
+      
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
+        address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'tokenURI',
+        args: [42n],
+      });
       expect(result).toBe(uri);
     });
 
-    it('getNFTOwner: should identify current signature holding the unit', async () => {
-      mockPublicClient.readContract.mockResolvedValue(mockAddress);
-      const owner = await getNFTOwner(mockPublicClient, 1n);
+    it('getNFTOwner: should identify current unit guardian', async () => {
+      (mockPublicClient.readContract as Mock).mockResolvedValue(mockAddress);
+      const owner = await getNFTOwner(mockPublicClient as PublicClient, 1n);
+      
+      expect(mockPublicClient.readContract).toHaveBeenCalledWith({
+        address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'ownerOf',
+        args: [1n],
+      });
       expect(owner).toBe(mockAddress);
     });
   });
 
-  describe('Asset Management (Writes)', () => {
-    it('mintBot: should initiate the safeMint ritual', async () => {
-      const uri = "ipfs://soul-bound-metadata";
-      mockWalletClient.writeContract.mockResolvedValue('0xmint_hash');
-      const hash = await mintBot(mockWalletClient, mockAddress, uri);
+  describe('Asset Rituals (Writes)', () => {
+    it('mintBot: should initiate unit forge sequence', async () => {
+      const mockHash = '0xmint_success_hash';
+      const uri = "ipfs://new-bot-soul";
+      (mockWalletClient.writeContract as Mock).mockResolvedValue(mockHash);
       
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+      const hash = await mintBot(mockWalletClient as WalletClient, mockAddress, uri);
+      
+      expect(mockWalletClient.writeContract).toHaveBeenCalledWith({
         address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
         functionName: 'safeMint',
         args: [mockAddress, uri],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xmint_hash');
+        account: mockAddress,
+      });
+      expect(hash).toBe(mockHash);
     });
 
-    it('setNFTApprovalForAll: should grant nexus marketplace access to units', async () => {
-      mockWalletClient.writeContract.mockResolvedValue('0xapproval_hash');
-      const hash = await setNFTApprovalForAll(mockWalletClient, mockAddress, mockOperator, true);
+    it('setNFTApprovalForAll: should authorize nexus marketplace operator', async () => {
+      const mockHash = '0xapproval_success_hash';
+      (mockWalletClient.writeContract as Mock).mockResolvedValue(mockHash);
       
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+      const hash = await setNFTApprovalForAll(mockWalletClient as WalletClient, mockAddress, mockOperator, true);
+      
+      expect(mockWalletClient.writeContract).toHaveBeenCalledWith({
         address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
         functionName: 'setApprovalForAll',
         args: [mockOperator, true],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xapproval_hash');
+        account: mockAddress,
+      });
+      expect(hash).toBe(mockHash);
     });
   });
 });
