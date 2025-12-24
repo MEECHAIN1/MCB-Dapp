@@ -9,7 +9,7 @@ export const meeChain = {
 		symbol: 'MEC',
 	},
 	rpcUrls: {
-		default: { http: ['https://meechain.run.place'] }, 
+		default: { http: ['https://meechain.run.place:9545'] }, 
 	},
 	blockExplorers: {
 		default: { name: 'MeeScan', url: 'https://meechain.bolt.host' },
