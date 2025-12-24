@@ -24,9 +24,8 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     // ⚠️ หากคุณยังไม่มี terser ในเครื่อง ให้ใช้ 'esbuild' แทนเพื่อไม่ให้ build พัง
-    minify: 'esbuild'
+    minify: 'build'
     chunkSizeWarningLimit: 1000,
-    terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
@@ -42,5 +41,3 @@ export default defineConfig({
         }
       }
     }
-  },
-});
