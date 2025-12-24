@@ -5,60 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MeeChain MeeBot DApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: { 'nobel-gold': '#C5A059' },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-          }
-        }
-      }
-    </script>
-    
     <style>
-      body { background-color: #000; color: #fff; overflow-x: hidden; margin: 0; }
-      #root { width: 100vw; height: 100vh; }
-      canvas { touch-action: none; display: block; }
-      ::-webkit-scrollbar { width: 5px; }
-      ::-webkit-scrollbar-track { background: #000; }
-      ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+      body { background-color: #000; margin: 0; }
     </style>
-
-    <script type="importmap">
-    {
-     "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "@rainbow-me/rainbowkit": "https://esm.sh/@rainbow-me/rainbowkit@2.0.2?external=react,react-dom,wagmi,viem",
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "three": "https://esm.sh/three@0.160.0",
-        "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.11?external=three,react,react-dom",
-        "@react-three/drei": "https://esm.sh/@react-three/drei@9.88.16?external=three,react,react-dom",
-        "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom",
-        "lucide-react": "https://esm.sh/lucide-react@0.284.0?external=react",
-        "wagmi": "https://esm.sh/wagmi@2.5.7?external=react,react-dom",
-        "viem": "https://esm.sh/viem@2.7.1",
-        "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@5.17.19?external=react,react-dom",
-        "zustand": "https://esm.sh/zustand@4.4.3",
-       "@rainbow-me/rainbowkit": "https://esm.sh/@rainbow-me/rainbowkit@2.0.2?external=react,react-dom,wagmi,viem",
-       "@rainbow-me/rainbowkit/styles.css": "https://esm.sh/@rainbow-me/rainbowkit@2.0.2/styles.css",
-      }
-    }
-    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>
