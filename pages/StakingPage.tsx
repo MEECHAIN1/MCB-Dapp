@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
-import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from '../lib/contracts';
-import { useAppState } from '../context/useAppState';
+import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from './lib/contracts';
+import { useAppState } from './context/useAppState';
 import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
 
 const StakingPage: React.FC = () => {
