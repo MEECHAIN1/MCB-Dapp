@@ -14,7 +14,7 @@ if (typeof window !== 'undefined' && !(window as any).process) {
     env: { 
       NODE_ENV: 'development',
       // ดึงค่าจาก Import Meta (ของ Vite) มาใส่เพื่อให้ AI และ Contract ทำงานได้
-      API_KEY: (process.meta as any).env?.VITE_GEMINI_API_KEY || '' 
+      API_KEY: (process as any).env?.VITE_GEMINI_API_KEY || '' 
     } 
   };
 }
