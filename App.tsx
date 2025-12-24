@@ -19,7 +19,7 @@ import { useAppState } from './context/useAppState';
 import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
-const chainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 1337);
+const TARGET_CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID || 222222); 
 
 const GlobalManager: React.FC = () => {
   const { pathname } = useLocation();
@@ -32,8 +32,11 @@ const GlobalManager: React.FC = () => {
   }, [pathname, reset]);
 
   useEffect(() => {
-    if (isConnected && currentChainId !== chainId) {
-      setError(`Network Mismatch: Please connect to the ritual chain (Chain ID: ${chainId})`);
+    // 🟢 เช็คว่าถ้าเชื่อมต่อแล้วแต่ Chain ไม่ตรง ให้แสดง Error ทันที
+    if (isConnected && currentChainId !== TARGET_CHAIN_ID) {
+      setError(`Network Mismatch: โปรดสลับเครือข่ายไปที่ MeeChain (ID: ${TARGET_CHAIN_ID})`);
+    } else {
+      setError(undefined); // ล้าง Error เมื่อ Network ถูกต้อง
     }
   }, [isConnected, currentChainId, setError]);
 
