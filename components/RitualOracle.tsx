@@ -1,9 +1,4 @@
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
-*/
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleGenAI, Modality } from "@google/genai";
@@ -92,7 +87,7 @@ const playRitualSound = (type: 'chime' | 'drone' | 'click') => {
 };
 
 export const RitualOracle: React.FC = () => {
-  const { language } = useAppState();
+  const { language, setError } = useAppState();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'oracle'; text: string }[]>([
@@ -133,7 +128,6 @@ export const RitualOracle: React.FC = () => {
     }
   }, [messages, isTyping]);
 
-  // Speech-to-Text Setup with Error Resilience
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -153,6 +147,7 @@ export const RitualOracle: React.FC = () => {
       recognition.onerror = (event: any) => {
         console.error("Speech Recognition Error:", event.error);
         setIsListening(false);
+        setError(language === 'EN' ? "Vocal transmission interrupted." : "การรับสัญญาณเสียงขัดข้อง");
       };
       
       recognition.onend = () => setIsListening(false);
@@ -166,11 +161,11 @@ export const RitualOracle: React.FC = () => {
         } catch (e) {}
       }
     };
-  }, [language]);
+  }, [language, setError]);
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      alert(language === 'EN' ? "Vocal transmission is not supported on this device." : "อุปกรณ์นี้ไม่รองรับการส่งสัญญาณด้วยเสียง");
+      setError(language === 'EN' ? "Vocal transmission is not supported on this device." : "อุปกรณ์นี้ไม่รองรับการส่งสัญญาณด้วยเสียง");
       return;
     }
 
@@ -195,7 +190,6 @@ export const RitualOracle: React.FC = () => {
     if (!speakerEnabled || !text) return;
     setIsVocalizing(true);
     try {
-      // Re-instantiate SDK to ensure latest key from polyfilled process.env
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -253,10 +247,7 @@ export const RitualOracle: React.FC = () => {
         model: 'gemini-3-flash-preview',
         contents: userMessage,
         config: {
-          systemInstruction: `You are the "MeeChain High Tech-Priest Oracle". 
-          Your tone is solemn, cryptic, ritualistic, yet technologically advanced. 
-          Respond in ${language === 'EN' ? 'English' : 'Thai'}. 
-          Current user metrics: MCB: ${metrics.mcb}, Bots: ${metrics.bots}.`,
+          systemInstruction: `You are the "MeeChain High Tech-Priest Oracle". Your tone is solemn, cryptic, ritualistic, yet technologically advanced. Respond in ${language === 'EN' ? 'English' : 'Thai'}. Current user metrics: MCB: ${metrics.mcb}, Bots: ${metrics.bots}.`,
         },
       });
 
@@ -265,8 +256,9 @@ export const RitualOracle: React.FC = () => {
       playRitualSound('chime');
       
       await vocalizeResponse(oracleText);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Ritual link error:", err);
+      setError(language === 'EN' ? "Oracle connection ritual failed." : "พิธีกรรมเชื่อมต่อออราเคิลล้มเหลว");
       setMessages(prev => [...prev, { role: 'oracle', text: language === 'EN' ? "Connection ritual failed." : "พิธีกรรมเชื่อมต่อล้มเหลว" }]);
     } finally {
       setIsTyping(false);
@@ -297,7 +289,6 @@ export const RitualOracle: React.FC = () => {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed bottom-24 right-8 z-[70] w-96 max-h-[550px] bg-zinc-950/90 backdrop-blur-2xl border border-purple-500/40 rounded-[2.5rem] shadow-[0_0_60px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col pointer-events-auto"
           >
-            {/* Header */}
             <div className="p-5 bg-purple-900/30 border-b border-purple-500/20 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-500/20 rounded-xl border border-purple-500/30">
@@ -333,7 +324,6 @@ export const RitualOracle: React.FC = () => {
               </div>
             </div>
 
-            {/* Metrics Bar */}
             <div className="px-5 py-2 bg-purple-950/20 border-b border-purple-500/10 flex items-center justify-between text-[8px] font-mono uppercase tracking-tighter text-purple-400">
                <div className="flex items-center gap-1"><Zap size={10} /> {parseFloat(metrics.mcb).toFixed(2)} MCB</div>
                <div className="flex items-center gap-1"><Activity size={10} /> {metrics.bots} FLEET</div>
@@ -344,7 +334,6 @@ export const RitualOracle: React.FC = () => {
                )}
             </div>
 
-            {/* Chat Area */}
             <div 
               ref={scrollRef}
               className="flex-1 overflow-y-auto p-6 space-y-5 font-mono scrollbar-hide relative"
@@ -376,7 +365,6 @@ export const RitualOracle: React.FC = () => {
               )}
             </div>
 
-            {/* Input Area */}
             <form onSubmit={handleAskOracle} className="p-5 bg-zinc-900/50 border-t border-zinc-800 relative">
               <div className="relative flex items-center gap-2">
                 <button

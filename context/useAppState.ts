@@ -39,7 +39,6 @@ export const useAppState = create<AppState>((set, get) => ({
   setLanguage: (lang) => set({ language: lang }),
   toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
   
-  // Generic helper for any blockchain transaction
   executeRitual: async (action) => {
     const { language, triggerSuccess } = get();
     set({ isLoading: true, error: null, txHash: null, ritualSuccess: false });
@@ -48,13 +47,16 @@ export const useAppState = create<AppState>((set, get) => ({
       const hash = await action();
       set({ txHash: hash });
       
+      // Wait for block confirmation
       await waitForTransactionReceipt(config, { hash });
       triggerSuccess();
     } catch (err: any) {
       console.error("Ritual Execution Error:", err);
-      const msg = err.shortMessage || err.message || (language === 'EN' ? "Ritual failed" : "พิธีกรรมล้มเหลว");
+      // Extract human-readable error or use localized fallback
+      const msg = err.shortMessage || err.message || (language === 'EN' ? "Nexus connection failure" : "การเชื่อมต่อเน็กซัสล้มเหลว");
       set({ error: msg, isLoading: false });
-      throw err; // Re-throw to allow local component handling if needed
+      // We throw to allow local components to handle secondary UI logic if needed
+      throw err;
     }
   },
 

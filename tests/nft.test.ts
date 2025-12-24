@@ -5,7 +5,7 @@
 */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll } from '../lib/nft';
+import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll, mintBot } from '../lib/nft';
 import { ADRS } from '../lib/contracts';
 
 describe('MCB-Bot Asset Service', () => {
@@ -48,6 +48,20 @@ describe('MCB-Bot Asset Service', () => {
   });
 
   describe('Asset Management (Writes)', () => {
+    it('mintBot: should initiate the safeMint ritual', async () => {
+      const uri = "ipfs://soul-bound-metadata";
+      mockWalletClient.writeContract.mockResolvedValue('0xmint_hash');
+      const hash = await mintBot(mockWalletClient, mockAddress, uri);
+      
+      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+        address: ADRS.nft,
+        functionName: 'safeMint',
+        args: [mockAddress, uri],
+        account: mockAddress
+      }));
+      expect(hash).toBe('0xmint_hash');
+    });
+
     it('setNFTApprovalForAll: should grant nexus marketplace access to units', async () => {
       mockWalletClient.writeContract.mockResolvedValue('0xapproval_hash');
       const hash = await setNFTApprovalForAll(mockWalletClient, mockAddress, mockOperator, true);
