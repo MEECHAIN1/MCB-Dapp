@@ -32,7 +32,6 @@ const GlobalManager: React.FC = () => {
   }, [pathname, reset]);
 
   useEffect(() => {
-    // 🟢 เช็คว่าถ้าเชื่อมต่อแล้วแต่ Chain ไม่ตรง ให้แสดง Error ทันที
     if (isConnected && currentChainId !== TARGET_CHAIN_ID) {
       setError(`Network Mismatch: โปรดสลับเครือข่ายไปที่ MeeChain (ID: ${TARGET_CHAIN_ID})`);
     } else {
