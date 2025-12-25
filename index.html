@@ -82,16 +82,12 @@
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
     <script>
-      // Monitoring global errors that might occur before React boots
       window.onerror = function(msg, url, line, col, error) {
         console.error("Global Catch: ", msg, error);
       };
-
-      // Failsafe timer: Reduced to 10s to give more room for slow ESM resolution
       window.onload = () => {
         setTimeout(() => {
           const root = document.getElementById('root');
-          // If root is still empty OR has not been hydrated by React
           if (root && root.innerHTML === '') {
             console.error("Critical: Application manifest failed to load - Timeout reached.");
             root.innerHTML = `
