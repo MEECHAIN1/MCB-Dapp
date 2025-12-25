@@ -26,7 +26,6 @@ declare global {
     readonly env: ImportMetaEnv;
   }
 
-  // Fix: Augmenting NodeJS namespace to provide types for process.env
   namespace NodeJS {
     interface ProcessEnv {
       API_KEY: string;
