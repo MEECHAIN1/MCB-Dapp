@@ -19,7 +19,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 5000,
     terserOptions: {
       compress: {
         drop_console: true,
