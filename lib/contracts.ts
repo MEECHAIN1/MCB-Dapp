@@ -14,7 +14,7 @@ const getEnv = (key: string, fallback: string): string => {
     const metaEnv = (import.meta as any).env;
     if (metaEnv && metaEnv[key]) return metaEnv[key];
   } catch (e) {
-    // Silent fail
+
   }
   return fallback;
 };
