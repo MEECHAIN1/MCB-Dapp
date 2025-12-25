@@ -6,7 +6,6 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // เชื่อมโยง @/ ให้ชี้ไปที่ Root ตาม tsconfig
       '@': path.resolve(__dirname, './'),
     },
   },
@@ -22,9 +21,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    // ใช้ esbuild แทน terser เพื่อความเร็วและไม่ต้องติดตั้ง dependency เพิ่ม
     minify: 'esbuild', 
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         manualChunks: {
