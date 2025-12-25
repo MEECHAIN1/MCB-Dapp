@@ -1,15 +1,30 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Helper to safely get environment variables from browser window.process
+const getEnv = (key: string, fallback: string): string => {
+  try {
+    // Check window.process.env first (defined in index.html)
+    const win = window as any;
+    if (win.process?.env?.[key]) return win.process.env[key];
+    
+    // Check import.meta.env as fallback for local dev
+    const metaEnv = (import.meta as any).env;
+    if (metaEnv && metaEnv[key]) return metaEnv[key];
+  } catch (e) {
+    // Silent fail
+  }
+  return fallback;
+};
+
 export const ADRS = {
-  nft: ((import.meta as any).env?.VITE_NFT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
-  marketplace: ((import.meta as any).env?.VITE_MARKETPLACE_ADDRESS || "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
-  staking: ((import.meta as any).env?.VITE_STAKING_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
-  token: ((import.meta as any).env?.VITE_TOKEN_ADDRESS || "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, 
-  miner: ((import.meta as any).env?.VITE_MINER_ADDRESS || "0x70997970C51812dc3A010C7d01b50e0d17dc79C8") as `0x${string}`,
+  nft: getEnv("VITE_NFT_ADDRESS", "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
+  marketplace: getEnv("VITE_MARKETPLACE_ADDRESS", "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
+  staking: getEnv("VITE_STAKING_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
+  token: getEnv("VITE_TOKEN_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, 
+  miner: getEnv("VITE_MINER_ADDRESS", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8") as `0x${string}`,
 };
 
 export const MINIMAL_ERC20_ABI = [

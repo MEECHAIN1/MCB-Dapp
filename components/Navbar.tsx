@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAccount, useConnect, useDisconnect, useChainId } from 'wagmi';
-import { Wallet, LogOut, ShieldCheck, Zap, Languages, Pickaxe } from 'lucide-react';
+import { Wallet, LogOut, ShieldCheck, Zap, Languages, Pickaxe, RefreshCcw } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
 import { motion } from 'framer-motion';
 
@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const currentChainId = useChainId();
-  const { language, toggleLanguage } = useAppState();
+  const { language, toggleLanguage, handleSwitchNetwork } = useAppState();
   
   const targetChainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 1337);
   const isCorrectNetwork = currentChainId === targetChainId;
@@ -81,12 +81,21 @@ export const Navbar: React.FC = () => {
           </motion.button>
 
           {isConnected && (
-            <div className="hidden sm:flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 rounded-full px-3 py-1.5">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              onClick={!isCorrectNetwork ? handleSwitchNetwork : undefined}
+              className={`hidden sm:flex items-center gap-2 border rounded-full px-3 py-1.5 transition-all ${
+                isCorrectNetwork 
+                ? 'bg-zinc-900/50 border-zinc-800 cursor-default' 
+                : 'bg-red-500/10 border-red-500/50 hover:bg-red-500/20 cursor-pointer'
+              }`}
+            >
               <div className={`w-1.5 h-1.5 rounded-full ${isCorrectNetwork ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-tighter">
-                {isCorrectNetwork ? 'MeeChain-Ritual' : 'Wrong Network'}
+              <span className={`text-[9px] font-mono uppercase tracking-tighter ${isCorrectNetwork ? 'text-zinc-500' : 'text-red-400'}`}>
+                {isCorrectNetwork ? 'MeeChain-Ritual' : 'Switch Dimension'}
               </span>
-            </div>
+              {!isCorrectNetwork && <RefreshCcw size={10} className="text-red-400 animate-spin-slow" />}
+            </motion.button>
           )}
 
           {isConnected ? (

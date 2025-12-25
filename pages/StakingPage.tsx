@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
-import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from "@/lib/contracts";
-import { useAppState } from '@/context/useAppState';
+import { ADRS, MINIMAL_STAKING_ABI, MINIMAL_ERC20_ABI } from '../lib/contracts';
+import { useAppState } from '../context/useAppState';
 import { ArrowDownToLine, Gift, Ban } from 'lucide-react';
 
 const StakingPage: React.FC = () => {
@@ -38,24 +39,22 @@ const StakingPage: React.FC = () => {
 
   const handleAction = async (type: 'stake' | 'claim' | 'withdraw' | 'approve') => {
     if (!address) return;
-
+    
     await executeRitual(async () => {
       let hash: `0x${string}`;
       if (type === 'approve') {
-        const amountToApprove = parseUnits(stakeAmount || '1000000000', 18);
         hash = await writeContractAsync({
           address: ADRS.token as `0x${string}`,
           abi: MINIMAL_ERC20_ABI,
           functionName: 'approve',
-          args: [ADRS.staking as `0x${string}`, amountToApprove],
+          args: [ADRS.staking as `0x${string}`, parseUnits(stakeAmount || '1000000000', 18)],
         });
       } else if (type === 'stake') {
-        const stakeValue = parseUnits(stakeAmount, 18);
         hash = await writeContractAsync({
           address: ADRS.staking as `0x${string}`,
           abi: MINIMAL_STAKING_ABI,
           functionName: 'stake',
-          args: [stakeValue],
+          args: [parseUnits(stakeAmount, 18)],
         });
       } else if (type === 'claim') {
         hash = await writeContractAsync({
@@ -74,18 +73,19 @@ const StakingPage: React.FC = () => {
       return hash;
     });
 
+    // Cleanup & Refresh
     if (type === 'stake' || type === 'approve') {
-      refetchAllowance?.();
+      refetchAllowance();
       refetchStaked?.();
       setStakeAmount('');
     } else if (type === 'claim') {
-      refetchEarned?.();
+      refetchEarned();
     } else {
       refetchStaked?.();
     }
   };
 
-  const needsApproval = !!stakeAmount && allowance !== undefined && allowance < parseUnits(stakeAmount, 18);
+  const needsApproval = stakeAmount && allowance !== undefined && allowance < parseUnits(stakeAmount, 18);
 
   return (
     <div className="max-w-4xl mx-auto space-y-12">
@@ -95,6 +95,7 @@ const StakingPage: React.FC = () => {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Stake Panel */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col gap-6">
           <div>
             <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
@@ -107,14 +108,14 @@ const StakingPage: React.FC = () => {
           <div className="space-y-2">
             <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Tokens to Stake</label>
             <div className="relative">
-              <input
-                type="number"
+              <input 
+                type="number" 
                 value={stakeAmount}
                 onChange={(e) => setStakeAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full bg-black border border-zinc-800 rounded-xl p-4 font-mono text-xl focus:border-yellow-500 focus:outline-none transition-colors"
               />
-              <button
+              <button 
                 onClick={() => setStakeAmount('1000')}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-yellow-500 uppercase hover:text-yellow-400"
               >
@@ -124,7 +125,7 @@ const StakingPage: React.FC = () => {
           </div>
 
           {needsApproval ? (
-            <button
+            <button 
               onClick={() => handleAction('approve')}
               disabled={isLoading}
               className="w-full bg-zinc-100 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
@@ -132,16 +133,17 @@ const StakingPage: React.FC = () => {
               Authorize MCB Flow
             </button>
           ) : (
-            <button
+            <button 
               disabled={!stakeAmount || parseFloat(stakeAmount) <= 0 || isLoading}
               onClick={() => handleAction('stake')}
-              className="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(234,179,8,0.15)]"
+              className="w-full bg-yellow-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(234,179,8,0.2)]"
             >
               Initiate Stake
             </button>
           )}
         </div>
 
+        {/* Rewards Panel */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col justify-between">
           <div>
             <h3 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
@@ -158,10 +160,10 @@ const StakingPage: React.FC = () => {
             <p className="text-xs font-mono text-zinc-500 uppercase tracking-[0.2em]">MCB Rewards Earned</p>
           </div>
 
-          <button
+          <button 
             disabled={!earned || earned === 0n || isLoading}
             onClick={() => handleAction('claim')}
-            className="w-full border-2 border-green-500/50 text-green-500 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all disabled:opacity-50"
+            className="w-full border-2 border-green-500/50 text-green-500 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all disabled:opacity-30 disabled:border-zinc-800 disabled:text-zinc-700"
           >
             Claim Blessing
           </button>
@@ -176,7 +178,7 @@ const StakingPage: React.FC = () => {
             <p className="text-[10px] text-zinc-500 font-mono uppercase">Recover your MCB assets</p>
           </div>
         </div>
-        <button
+        <button 
           onClick={() => handleAction('withdraw')}
           disabled={isLoading}
           className="text-zinc-400 hover:text-white font-mono text-xs uppercase underline tracking-widest transition-colors disabled:opacity-30"

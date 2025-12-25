@@ -28,16 +28,28 @@ const MintPage: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: "Create a unique cyber-bot name, class (e.g. Vanguard, Oracle, Sentry), a short ritualistic bio, and a power level (1-100). Respond in JSON format.",
+        contents: "Forge a unique cyber-bot profile for the MeeChain Ritual. Provide a cryptic name, an arcane class (e.g. Chronos-Wraith, Void-Stalker, Nexus-Anchor, Binary-Lich), an evocative and mysterious bio steeped in techno-ritualistic lore (mentioning circuits, souls, cosmic flux, or forbidden silicon rituals), and a power level (1-100). Respond in JSON format.",
         config: {
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              name: { type: Type.STRING },
-              class: { type: Type.STRING },
-              bio: { type: Type.STRING },
-              power: { type: Type.NUMBER }
+              name: { 
+                type: Type.STRING,
+                description: "A cryptic, high-tech name for the entity."
+              },
+              class: { 
+                type: Type.STRING,
+                description: "An arcane cybernetic class name."
+              },
+              bio: { 
+                type: Type.STRING,
+                description: "A mysterious and evocative ritualistic biography."
+              },
+              power: { 
+                type: Type.NUMBER,
+                description: "Numerical representation of flux capacity (1-100)."
+              }
             },
             required: ["name", "class", "bio", "power"]
           }
@@ -48,6 +60,7 @@ const MintPage: React.FC = () => {
       setSoul(data);
       setRitualStep('soul-bound');
     } catch (err: any) {
+      console.error("Soul generation failed:", err);
       setRitualStep('idle');
     }
   };
@@ -57,15 +70,21 @@ const MintPage: React.FC = () => {
     setRitualStep('forging');
     
     try {
-      await executeRitual(async () => {
-        const metadataUri = `data:application/json;base64,${btoa(JSON.stringify(soul))}`;
-        return await writeContractAsync({
-          address: ADRS.nft as `0x${string}`,
-          abi: MINIMAL_NFT_ABI,
-          functionName: 'safeMint',
-          args: [address, metadataUri],
-        });
-      });
+      const metadataUri = `data:application/json;base64,${btoa(JSON.stringify(soul))}`;
+      await executeRitual(
+        async () => {
+          return await writeContractAsync({
+            address: ADRS.nft as `0x${string}`,
+            abi: MINIMAL_NFT_ABI,
+            functionName: 'safeMint',
+            args: [address, metadataUri],
+          });
+        },
+        { 
+          to: ADRS.nft as `0x${string}`, 
+          data: undefined // safeMint call data estimated inside
+        }
+      );
       setRitualStep('completed');
     } catch (err: any) {
       setRitualStep('soul-bound');
@@ -120,7 +139,6 @@ const MintPage: React.FC = () => {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Left: Action Column */}
         <div className="space-y-6">
           <div className={`p-8 rounded-[2.5rem] border transition-all ${ritualStep === 'idle' || ritualStep === 'consulting' ? 'bg-zinc-900 border-yellow-500/50 shadow-[0_0_30px_rgba(234,179,8,0.1)]' : 'bg-zinc-950 border-zinc-800 opacity-50'}`}>
             <div className="flex items-start gap-6">
@@ -163,7 +181,6 @@ const MintPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Results / Soul View */}
         <div className="relative">
           <AnimatePresence mode="wait">
             {soul ? (
@@ -238,7 +255,6 @@ const MintPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Ritual Status HUD */}
       <div className="bg-black/80 border border-zinc-800 p-6 rounded-3xl flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Activity className="text-yellow-500 animate-pulse" size={20} />

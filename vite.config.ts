@@ -1,14 +1,9 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './'),
-    },
-  },
   server: {
     host: '0.0.0.0',
     port: 3000,
@@ -16,13 +11,21 @@ export default defineConfig({
     allowedHosts: true
   },
   define: {
-    'process.env.API_KEY': JSON.stringify(process.env.VITE_API_KEY || process.env.API_KEY || ''),
+    // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
+    // into the bundled code as process.env.API_KEY
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || process.env.VITE_API_KEY || ''),
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'esbuild', 
-    chunkSizeWarningLimit: 500,
+    minify: 'terser',
+    chunkSizeWarningLimit: 1000,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -33,5 +36,5 @@ export default defineConfig({
         }
       }
     }
-  }
+  },
 });
