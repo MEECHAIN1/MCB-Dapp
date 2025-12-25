@@ -2,7 +2,6 @@ import { createConfig, http } from 'wagmi';
 import { localhost } from 'viem/chains';
 import { injected } from 'wagmi/connectors';
 
-// Safely access environment variables from the window.process.env initialized in index.html
 const getEnvValue = (key: string, fallback: string): string => {
   try {
     const win = window as any;
@@ -12,7 +11,7 @@ const getEnvValue = (key: string, fallback: string): string => {
 };
 
 const chainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://rpc.meechain.io');
+const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://meechain1.bolt.host');
 
 const meeChain = {
   ...localhost,
