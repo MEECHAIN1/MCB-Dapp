@@ -23,7 +23,7 @@ const meeChain = {
     public: { http: [rpcUrl] },
   },
   blockExplorers: {
-    default: { name: 'MeeScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://explorer.meechain.io') },
+    default: { name: 'MeeScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://meechain1.bolt.host') },
   },
 };
 
