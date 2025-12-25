@@ -46,13 +46,11 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
           })
         );
         await refetchApproval();
-        // Step proceeds to listing automatically via useEffect or manually here
         await executeListing();
       } else {
         await executeListing();
       }
     } catch (err) {
-      // Errors are handled globally by executeRitual
       setStep('input');
     }
   };
