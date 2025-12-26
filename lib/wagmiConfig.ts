@@ -10,7 +10,7 @@ const getEnvValue = (key: string, fallback: string): string => {
   return fallback;
 };
 
-const chainId = Number(getEnvValue('VITE_CHAIN_ID', '222222'));
+const chainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
 const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://shape-mainnet.g.alchemy.com/v2/J1HfoMSvISZdnANVlkTA6');
 
 const meeChain = {
