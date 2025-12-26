@@ -33,6 +33,8 @@ export const config = createConfig({
     injected(),
   ],
   transports: {
-    [meeChain.id]: http(rpcUrl),
+   [meeChain.id]: http(rpcUrl),
   },
 });
+
+export const getDefaultConfig = (params: any) => config;
