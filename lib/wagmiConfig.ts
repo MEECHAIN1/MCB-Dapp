@@ -16,7 +16,7 @@ const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://shape-mainnet.g.alchemy.com/
 const meeChain = {
   ...localhost,
   id: chainId,
-  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain'),
+  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain Bot'),
   nativeCurrency: { name: 'MeeChain Bot', symbol: 'MCB', decimals: 18 },
   rpcUrls: {
     default: { http: [rpcUrl] },
