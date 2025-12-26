@@ -11,8 +11,6 @@ export default defineConfig({
     allowedHosts: true
   },
   define: {
-    // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
-    // into the bundled code as process.env.API_KEY
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || process.env.VITE_API_KEY || ''),
   },
   build: {
