@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWatchContractEvent } from 'wagmi';
 import { ADRS, MINIMAL_NFT_ABI, MINIMAL_STAKING_ABI } from '../lib/contracts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,7 +17,18 @@ interface RitualLog {
 
 const EventLogPage: React.FC = () => {
   const [logs, setLogs] = useState<RitualLog[]>([]);
-  const { setError } = useAppState();
+  const { setLoading, setError } = useAppState();
+  const [isEstablishing, setIsEstablishing] = useState(true);
+
+  // Sync global loading state for log establishment
+  useEffect(() => {
+    setLoading(isEstablishing);
+    const timer = setTimeout(() => {
+      setIsEstablishing(false);
+      setLoading(false);
+    }, 2000); // Simulate initial connection ritual
+    return () => clearTimeout(timer);
+  }, [isEstablishing, setLoading]);
 
   // Watch NFT Transfers
   useWatchContractEvent({

@@ -1,64 +1,87 @@
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll, mintBot } from '../lib/nft';
+import { Address, PublicClient, WalletClient } from 'viem';
+import { ADRS, MINIMAL_NFT_ABI } from '../lib/contracts';
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
-*/
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getNFTBalance, getNFTUri, getNFTOwner, setNFTApprovalForAll } from '../lib/nft';
-import { ADRS } from '../lib/contracts';
-
-describe('MCB-Bot Asset Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890' as const;
-  const mockOperator = '0x0987654321098765432109876543210987654321' as const;
+describe('MeeBot NFT Service (Comprehensive)', () => {
+  const mockAddr = '0x1111111111111111111111111111111111111111' as Address;
+  const mockOp = '0x2222222222222222222222222222222222222222' as Address;
+  const mockTokenId = 1n;
   
-  let mockPublicClient: any;
-  let mockWalletClient: any;
+  let mockPublic: Partial<PublicClient>;
+  let mockWallet: Partial<WalletClient>;
 
   beforeEach(() => {
-    mockPublicClient = { readContract: vi.fn() };
-    mockWalletClient = { writeContract: vi.fn() };
+    mockPublic = { readContract: vi.fn() as Mock };
+    mockWallet = { writeContract: vi.fn() as Mock };
+    vi.clearAllMocks();
   });
 
-  describe('Asset Telemetry (Reads)', () => {
-    it('getNFTBalance: should return unit count in fleet', async () => {
-      mockPublicClient.readContract.mockResolvedValue(12n);
-      const balance = await getNFTBalance(mockPublicClient, mockAddress);
-      
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Read Operations', () => {
+    it('getNFTBalance: returns correct fleet count', async () => {
+      (mockPublic.readContract as Mock).mockResolvedValue(5n);
+      const res = await getNFTBalance(mockPublic as PublicClient, mockAddr);
+      expect(res).toBe(5n);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
         address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
         functionName: 'balanceOf',
-        args: [mockAddress]
-      }));
-      expect(balance).toBe(12n);
+        args: [mockAddr],
+      });
     });
 
-    it('getNFTUri: should fetch cybernetic metadata pointer', async () => {
-      const uri = 'ipfs://mcb-bot-42-config';
-      mockPublicClient.readContract.mockResolvedValue(uri);
-      const result = await getNFTUri(mockPublicClient, 42n);
-      expect(result).toBe(uri);
+    it('getNFTUri: fetches correct metadata link', async () => {
+      const uri = "ipfs://ritual-data";
+      (mockPublic.readContract as Mock).mockResolvedValue(uri);
+      const res = await getNFTUri(mockPublic as PublicClient, mockTokenId);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
+        address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'tokenURI',
+        args: [mockTokenId],
+      });
+      expect(res).toBe(uri);
     });
 
-    it('getNFTOwner: should identify current signature holding the unit', async () => {
-      mockPublicClient.readContract.mockResolvedValue(mockAddress);
-      const owner = await getNFTOwner(mockPublicClient, 1n);
-      expect(owner).toBe(mockAddress);
+    it('getNFTOwner: identifies unit owner correctly', async () => {
+      (mockPublic.readContract as Mock).mockResolvedValue(mockAddr);
+      const res = await getNFTOwner(mockPublic as PublicClient, mockTokenId);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
+        address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'ownerOf',
+        args: [mockTokenId],
+      });
+      expect(res).toBe(mockAddr);
     });
   });
 
-  describe('Asset Management (Writes)', () => {
-    it('setNFTApprovalForAll: should grant nexus marketplace access to units', async () => {
-      mockWalletClient.writeContract.mockResolvedValue('0xapproval_hash');
-      const hash = await setNFTApprovalForAll(mockWalletClient, mockAddress, mockOperator, true);
-      
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Write Operations', () => {
+    it('mintBot: executes forge ritual correctly', async () => {
+      const uri = "ipfs://new-bot";
+      (mockWallet.writeContract as Mock).mockResolvedValue('0xhash');
+      const res = await mintBot(mockWallet as WalletClient, mockAddr, uri);
+      expect(mockWallet.writeContract).toHaveBeenCalledWith({
         address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
+        functionName: 'safeMint',
+        args: [mockAddr, uri],
+        account: mockAddr,
+      });
+      expect(res).toBe('0xhash');
+    });
+
+    it('setNFTApprovalForAll: authorizes nexus marketplace', async () => {
+      (mockWallet.writeContract as Mock).mockResolvedValue('0xhash');
+      const res = await setNFTApprovalForAll(mockWallet as WalletClient, mockAddr, mockOp, true);
+      expect(mockWallet.writeContract).toHaveBeenCalledWith({
+        address: ADRS.nft,
+        abi: MINIMAL_NFT_ABI,
         functionName: 'setApprovalForAll',
-        args: [mockOperator, true],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xapproval_hash');
+        args: [mockOp, true],
+        account: mockAddr,
+      });
+      expect(res).toBe('0xhash');
     });
   });
 });

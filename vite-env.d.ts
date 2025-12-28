@@ -4,7 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { ThreeElements } from '@react-three/fiber';
+// Fix: Removed @react-three/fiber import as it's no longer needed for manual JSX augmentation
+// which was causing shadowing issues with standard React HTML elements.
+
+export {};
 
 declare global {
   // Manual definition for Vite's ImportMetaEnv to resolve missing vite/client types
@@ -31,11 +34,10 @@ declare global {
     }
   }
 
-  // Fix: Augment global JSX namespace to include React Three Fiber intrinsic elements
-  // We extend the global namespace carefully to ensure standard HTML elements are preserved.
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
+  // Fix: Removed the problematic JSX namespace augmentation that shadowed standard HTML elements.
+  // Standard HTML elements (div, p, button, etc.) are now correctly provided by React's default types.
+  // Three.js elements are handled via local string aliases in components like QuantumScene.tsx
+  // to maintain type safety without conflicting with standard DOM elements.
 }
 
 // Fix: Removed the problematic declare module 'react' block that was causing 

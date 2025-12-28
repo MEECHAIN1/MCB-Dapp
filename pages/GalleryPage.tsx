@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useWatchContractEvent, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWatchContractEvent, useWriteContract } from 'wagmi';
 import { ADRS, MINIMAL_NFT_ABI, MINIMAL_MARKETPLACE_ABI } from '../lib/contracts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Box, History, ExternalLink, Cpu, Tag, DollarSign, X, CheckCircle2 } from 'lucide-react';
@@ -17,7 +17,7 @@ interface LogEntry {
 
 const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: boolean, onClose: () => void }) => {
   const { address } = useAccount();
-  const { setLoading, setError, triggerSuccess, setTxHash } = useAppState();
+  const { executeRitual, isLoading } = useAppState();
   const [price, setPrice] = useState('');
   const [step, setStep] = useState<'input' | 'approving' | 'listing'>('input');
 
@@ -32,28 +32,27 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
 
   const handleList = async () => {
     if (!price || !address) return;
-    setLoading(true);
     
     try {
       // 1. Handle Approval if needed
       if (!isApproved) {
         setStep('approving');
-        const approvalHash = await writeContractAsync({
-          address: ADRS.nft as `0x${string}`,
-          abi: MINIMAL_NFT_ABI,
-          functionName: 'setApprovalForAll',
-          args: [ADRS.marketplace as `0x${string}`, true],
-        });
-        setTxHash(approvalHash);
-        // In a more complex app, we'd use useWaitForTransactionReceipt here.
-        // For simplicity, we'll suggest user to wait or just proceed if isApproved updates via refetch.
-        // But the best UX is a sequential flow.
+        await executeRitual(() => 
+          writeContractAsync({
+            address: ADRS.nft as `0x${string}`,
+            abi: MINIMAL_NFT_ABI,
+            functionName: 'setApprovalForAll',
+            args: [ADRS.marketplace as `0x${string}`, true],
+          })
+        );
+        await refetchApproval();
+        // Step proceeds to listing automatically via useEffect or manually here
+        await executeListing();
       } else {
         await executeListing();
       }
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-      setLoading(false);
+    } catch (err) {
+      // Errors are handled globally by executeRitual
       setStep('input');
     }
   };
@@ -61,28 +60,19 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
   const executeListing = async () => {
     setStep('listing');
     try {
-      const listingHash = await writeContractAsync({
-        address: ADRS.marketplace as `0x${string}`,
-        abi: MINIMAL_MARKETPLACE_ABI,
-        functionName: 'listNFT',
-        args: [tokenId, parseUnits(price, 18)],
-      });
-      setTxHash(listingHash);
-      triggerSuccess();
+      await executeRitual(() => 
+        writeContractAsync({
+          address: ADRS.marketplace as `0x${string}`,
+          abi: MINIMAL_MARKETPLACE_ABI,
+          functionName: 'listNFT',
+          args: [tokenId, parseUnits(price, 18)],
+        })
+      );
       onClose();
-    } catch (err: any) {
-      setError(err.shortMessage || err.message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setStep('input');
     }
   };
-
-  // Effect to watch approval changes and proceed to listing
-  useEffect(() => {
-    if (isApproved && step === 'approving') {
-      executeListing();
-    }
-  }, [isApproved, step]);
 
   if (!isOpen) return null;
 
@@ -100,7 +90,6 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
         animate={{ scale: 1, opacity: 1 }}
         className="relative bg-zinc-950 border border-zinc-800 p-10 rounded-[3rem] w-full max-w-md shadow-2xl overflow-hidden"
       >
-        {/* Decorative elements inside modal */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full" />
         
         <button onClick={onClose} className="absolute top-8 right-8 text-zinc-500 hover:text-white transition-colors bg-white/5 p-1.5 rounded-lg">
@@ -129,9 +118,10 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
                 <input 
                   type="number"
                   value={price}
+                  disabled={isLoading}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-black/50 border border-zinc-800 rounded-3xl py-5 pl-14 pr-6 text-xl font-mono focus:border-yellow-500/50 outline-none transition-all placeholder:text-zinc-800"
+                  className="w-full bg-black/50 border border-zinc-800 rounded-3xl py-5 pl-14 pr-6 text-xl font-mono focus:border-yellow-500/50 outline-none transition-all placeholder:text-zinc-800 disabled:opacity-50"
                 />
              </div>
           </div>
@@ -139,21 +129,14 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
           <div className="w-full space-y-3">
             <button 
               onClick={handleList}
-              disabled={!price || step !== 'input'}
+              disabled={!price || isLoading}
               className="w-full bg-yellow-500 text-black py-5 rounded-[2rem] font-black uppercase tracking-widest hover:bg-yellow-400 transition-all disabled:opacity-50 shadow-[0_0_30px_rgba(234,179,8,0.2)] active:scale-95 flex items-center justify-center gap-3"
             >
-              {step === 'input' && "Commit to Nexus"}
-              {step === 'approving' && (
-                <>
-                  <Cpu className="animate-spin" size={18} />
-                  Authorizing Flow...
-                </>
-              )}
-              {step === 'listing' && (
-                <>
-                  <Box className="animate-pulse" size={18} />
-                  Posting Ritual...
-                </>
+              {!isLoading ? "Commit to Nexus" : (
+                <span className="flex items-center gap-2">
+                   <Cpu className="animate-spin" size={18} />
+                   {step === 'approving' ? 'Authorizing Flow...' : 'Posting Ritual...'}
+                </span>
               )}
             </button>
             
@@ -180,11 +163,10 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
 
 const GalleryPage: React.FC = () => {
   const { address } = useAccount();
-  const { setLoading, setError } = useAppState();
+  const { setError } = useAppState();
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedBot, setSelectedBot] = useState<bigint | null>(null);
 
-  // Real-time Event Subscription
   useWatchContractEvent({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
@@ -204,23 +186,13 @@ const GalleryPage: React.FC = () => {
     }
   });
 
-  const { data: balance, isLoading: isNftLoading, isError, error } = useReadContract({
+  const { data: balance, isLoading: isNftLoading } = useReadContract({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { enabled: !!address }
   });
-
-  useEffect(() => {
-    setLoading(isNftLoading);
-  }, [isNftLoading, setLoading]);
-
-  useEffect(() => {
-    if (isError && error) {
-      setError(error.message);
-    }
-  }, [isError, error, setError]);
 
   return (
     <div className="space-y-12 pb-24">
@@ -234,7 +206,6 @@ const GalleryPage: React.FC = () => {
         </div>
       </header>
 
-      {/* NFT Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {balance && Array.from({ length: Number(balance) }).map((_, i) => (
           <motion.div 
@@ -245,17 +216,13 @@ const GalleryPage: React.FC = () => {
             className="aspect-square bg-zinc-900/40 border border-zinc-800/50 rounded-[2.5rem] overflow-hidden group relative flex items-center justify-center"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
-            
-            {/* Background Icon */}
             <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
                <Cpu size={120} className="text-yellow-500" />
             </div>
-            
             <div className="absolute bottom-6 left-8 z-20">
               <p className="text-[10px] font-mono text-yellow-500/60 uppercase tracking-widest mb-1">Fleet Unit</p>
               <h4 className="font-black text-white uppercase tracking-tighter text-xl italic">MCB-BOT #{i + 1}</h4>
             </div>
-
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 transition-all backdrop-blur-md bg-black/40">
                <button 
                  onClick={() => setSelectedBot(BigInt(i + 1))}
@@ -277,7 +244,6 @@ const GalleryPage: React.FC = () => {
         )}
       </div>
 
-      {/* Ritual Logs Section */}
       <section className="bg-zinc-950 border border-zinc-800 rounded-[3rem] overflow-hidden shadow-2xl">
         <div className="p-8 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/30">
           <h3 className="font-black italic uppercase tracking-tighter flex items-center gap-3 text-white text-lg">

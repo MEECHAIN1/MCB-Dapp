@@ -1,105 +1,99 @@
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { stakeTokens, getEarnedRewards, claimRewards, withdrawTokens, getStakedBalance, getRewardRate } from '../lib/staking';
+import { Address, PublicClient, WalletClient, parseUnits } from 'viem';
+import { ADRS, MINIMAL_STAKING_ABI } from '../lib/contracts';
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
-*/
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { stakeTokens, getEarnedRewards, getRewardRate, claimRewards, withdrawTokens, getStakedBalance } from '../lib/staking';
-import { parseUnits } from 'viem';
-import { ADRS } from '../lib/contracts';
-
-describe('Ritual Staking Service', () => {
-  const mockAddress = '0x1234567890123456789012345678901234567890' as const;
+describe('Staking Ritual Service (Comprehensive)', () => {
+  const mockAddr = '0x1234123412341234123412341234123412341234' as Address;
   
-  let mockPublicClient: any;
-  let mockWalletClient: any;
+  let mockPublic: Partial<PublicClient>;
+  let mockWallet: Partial<WalletClient>;
 
   beforeEach(() => {
-    mockPublicClient = { readContract: vi.fn() };
-    mockWalletClient = { writeContract: vi.fn() };
+    mockPublic = { readContract: vi.fn() as Mock };
+    mockWallet = { writeContract: vi.fn() as Mock };
+    vi.clearAllMocks();
   });
 
-  describe('Telemetry (Reads)', () => {
-    it('getEarnedRewards: should fetch pending MCB rewards', async () => {
-      const expected = parseUnits('10.5', 18);
-      mockPublicClient.readContract.mockResolvedValue(expected);
-
-      const earned = await getEarnedRewards(mockPublicClient, mockAddress);
-      
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Read Operations', () => {
+    it('getEarnedRewards: fetches pending manifestations', async () => {
+      const earned = parseUnits('10', 18);
+      (mockPublic.readContract as Mock).mockResolvedValue(earned);
+      const res = await getEarnedRewards(mockPublic as PublicClient, mockAddr);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
         address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
         functionName: 'earned',
-        args: [mockAddress]
-      }));
-      expect(earned).toBe(expected);
+        args: [mockAddr],
+      });
+      expect(res).toBe(earned);
     });
 
-    it('getStakedBalance: should fetch amount currently sacrificed to nexus', async () => {
-      const expected = parseUnits('5000', 18);
-      mockPublicClient.readContract.mockResolvedValue(expected);
-
-      const balance = await getStakedBalance(mockPublicClient, mockAddress);
-      
-      expect(mockPublicClient.readContract).toHaveBeenCalledWith(expect.objectContaining({
+    it('getStakedBalance: retrieves current stake volume', async () => {
+      const staked = parseUnits('100', 18);
+      (mockPublic.readContract as Mock).mockResolvedValue(staked);
+      const res = await getStakedBalance(mockPublic as PublicClient, mockAddr);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
         address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
         functionName: 'balanceOf',
-        args: [mockAddress]
-      }));
-      expect(balance).toBe(expected);
+        args: [mockAddr],
+      });
+      expect(res).toBe(staked);
     });
 
-    it('getRewardRate: should fetch global emission intensity', async () => {
-      const expected = parseUnits('0.5', 18);
-      mockPublicClient.readContract.mockResolvedValue(expected);
-
-      const rate = await getRewardRate(mockPublicClient);
-      expect(rate).toBe(expected);
+    it('getRewardRate: retrieves global emission speed', async () => {
+      const rate = 100n;
+      (mockPublic.readContract as Mock).mockResolvedValue(rate);
+      const res = await getRewardRate(mockPublic as PublicClient);
+      expect(mockPublic.readContract).toHaveBeenCalledWith({
+        address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
+        functionName: 'rewardRate',
+      });
+      expect(res).toBe(rate);
     });
   });
 
-  describe('Rituals (Writes)', () => {
-    it('stakeTokens: should initiate stake ritual', async () => {
-      const amount = parseUnits('100', 18);
-      mockWalletClient.writeContract.mockResolvedValue('0xstake_hash');
-
-      const hash = await stakeTokens(mockWalletClient, mockAddress, amount);
-      
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+  describe('Write Operations', () => {
+    it('stakeTokens: initiates sacrifice ritual', async () => {
+      const amount = 1000n;
+      (mockWallet.writeContract as Mock).mockResolvedValue('0xtx');
+      const res = await stakeTokens(mockWallet as WalletClient, mockAddr, amount);
+      expect(mockWallet.writeContract).toHaveBeenCalledWith({
         address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
         functionName: 'stake',
         args: [amount],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xstake_hash');
+        account: mockAddr,
+      });
+      expect(res).toBe('0xtx');
     });
 
-    it('withdrawTokens: should initiate withdrawal ritual', async () => {
-      const amount = parseUnits('50', 18);
-      mockWalletClient.writeContract.mockResolvedValue('0xwithdraw_hash');
-
-      const hash = await withdrawTokens(mockWalletClient, mockAddress, amount);
-      
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+    it('withdrawTokens: initiates recovery ritual', async () => {
+      const amount = 500n;
+      (mockWallet.writeContract as Mock).mockResolvedValue('0xtx');
+      const res = await withdrawTokens(mockWallet as WalletClient, mockAddr, amount);
+      expect(mockWallet.writeContract).toHaveBeenCalledWith({
         address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
         functionName: 'withdraw',
         args: [amount],
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xwithdraw_hash');
+        account: mockAddr,
+      });
+      expect(res).toBe('0xtx');
     });
 
-    it('claimRewards: should execute the reward collection ritual', async () => {
-      mockWalletClient.writeContract.mockResolvedValue('0xclaim_hash');
-
-      const hash = await claimRewards(mockWalletClient, mockAddress);
-      
-      expect(mockWalletClient.writeContract).toHaveBeenCalledWith(expect.objectContaining({
+    it('claimRewards: manifests blessing ritual', async () => {
+      (mockWallet.writeContract as Mock).mockResolvedValue('0xtx');
+      const res = await claimRewards(mockWallet as WalletClient, mockAddr);
+      expect(mockWallet.writeContract).toHaveBeenCalledWith({
         address: ADRS.staking,
+        abi: MINIMAL_STAKING_ABI,
         functionName: 'getReward',
-        account: mockAddress
-      }));
-      expect(hash).toBe('0xclaim_hash');
+        account: mockAddr,
+      });
+      expect(res).toBe('0xtx');
     });
   });
 });
