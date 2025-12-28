@@ -13,7 +13,7 @@ import EventLogPage from './pages/EventLogPage';
 import MarketplacePage from './pages/MarketplacePage';
 import MintPage from './pages/MintPage';
 import MiningPage from './pages/MiningPage';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, as Routes, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
 
