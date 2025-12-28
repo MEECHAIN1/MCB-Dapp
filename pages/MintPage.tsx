@@ -83,7 +83,6 @@ const MintPage: React.FC = () => {
         { 
           to: ADRS.nft as `0x${string}`, 
           data: undefined // safeMint call data estimated inside
-          data: undefined
         }
       );
       setRitualStep('completed');

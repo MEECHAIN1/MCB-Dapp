@@ -13,8 +13,6 @@ const getEnvValue = (key: string, fallback: string): string => {
 
 const chainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
 const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://rpc.meechain.io');
-const chainId = Number(getEnvValue('VITE_CHAIN_ID', '31337'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', '127.0.0.1:9545');
 
 const meeChain = {
   ...localhost,
@@ -39,8 +37,3 @@ export const config = createConfig({
     [meeChain.id]: http(rpcUrl),
   },
 });
-   [meeChain.id]: http(rpcUrl),
-  },
-});
-
-export const getDefaultConfig = (params: any) => config;

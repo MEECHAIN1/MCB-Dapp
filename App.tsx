@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { WagmiProvider, useAccount, useChainId } from 'wagmi';
-import React, { useEffect, useState } from 'react';
-import { createConfig, http, WagmiProvider, useAccount, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from './lib/wagmiConfig';
 import { StatusOverlay } from './components/StatusOverlay';

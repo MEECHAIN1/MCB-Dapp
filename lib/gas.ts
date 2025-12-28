@@ -1,7 +1,6 @@
 import { createPublicClient, http, Address, parseEther } from 'viem';
 import { config } from './wagmiConfig';
 import { getPublicClient } from '@wagmi/core';
-import { meeChain } from './meeChain';
 
 export async function canAffordGas({
   from,
@@ -34,5 +33,4 @@ export async function canAffordGas({
     gasPrice,
     diff: required - balance
   };
-}
 }

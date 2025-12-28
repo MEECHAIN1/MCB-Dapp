@@ -15,7 +15,6 @@ const getEnv = (key: string, fallback: string): string => {
     if (metaEnv && metaEnv[key]) return metaEnv[key];
   } catch (e) {
     // Silent fail
-
   }
   return fallback;
 };
