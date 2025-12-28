@@ -14,7 +14,6 @@ export default defineConfig({
     // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
     // into the bundled code as process.env.API_KEY
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || process.env.VITE_API_KEY || ''),
-  },
   build: {
     outDir: 'dist',
     sourcemap: process.env.NODE_ENV !== 'production',
@@ -38,4 +37,5 @@ export default defineConfig({
       }
     }
   }
+ }
 }
