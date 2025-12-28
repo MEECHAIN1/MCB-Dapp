@@ -10,13 +10,13 @@ const getEnvValue = (key: string, fallback: string): string => {
   return fallback;
 };
 
-const chainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://shape-mainnet.g.alchemy.com/v2/J1HfoMSvISZdnANVlkTA6');
+const chainId = Number(getEnvValue('VITE_CHAIN_ID', '31337'));
+const rpcUrl = getEnvValue('VITE_RPC_URL', '127.0.0.1:9545');
 
 const meeChain = {
   ...localhost,
   id: chainId,
-  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain Bot'),
+  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain'),
   nativeCurrency: { name: 'MeeChain Bot', symbol: 'MCB', decimals: 18 },
   rpcUrls: {
     default: { http: [rpcUrl] },
