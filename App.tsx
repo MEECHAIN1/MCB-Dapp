@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Route, useLocation } from 'react-router-dom';
+import { useAppState } from './context/useAppState';
 import { WagmiProvider, useAccount, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from './lib/wagmiConfig';
@@ -13,9 +16,6 @@ import EventLogPage from './pages/EventLogPage';
 import MarketplacePage from './pages/MarketplacePage';
 import MintPage from './pages/MintPage';
 import MiningPage from './pages/MiningPage';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { HashRouter as Route, useLocation } from 'react-router-dom';
-import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const queryClient = new QueryClient({
