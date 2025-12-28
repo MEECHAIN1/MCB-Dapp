@@ -14,6 +14,7 @@ import MarketplacePage from './pages/MarketplacePage';
 import MintPage from './pages/MintPage';
 import MiningPage from './pages/MiningPage';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
 
