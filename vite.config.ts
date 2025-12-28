@@ -17,24 +17,26 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: process.env.NODE_ENV !== 'production',
     minify: 'esbuild',
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1500,
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
       },
     },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-web3': ['wagmi', 'viem', '@wagmi/core', '@tanstack/react-query'],
-          'vendor-ui': ['framer-motion', 'lucide-react', 'canvas-confetti'],
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei']
+     rollupOptions: {
+    output: {
+      manualChunks(id) {
+        if (id.includes('node_modules')) {
+          if (id.includes('three')) return 'vendor-three';
+          if (id.includes('react')) return 'vendor-react';
+          if (id.includes('wagmi') || id.includes('viem')) return 'vendor-web3';
+          return 'vendor-ui';
         }
       }
     }
   },
 });
+      
