@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { useAppState } from './context/useAppState';
-import { WagmiProvider, useAccount, useChainId } from 'wagmi';
+import React, { useEffect, useState } from 'react';
+import { createConfig, http, WagmiProvider, useAccount, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { config } from './lib/wagmiConfig';
+import { localhost } from 'viem/chains';
 import { StatusOverlay } from './components/StatusOverlay';
 import { Navbar } from './components/Navbar';
 import { RitualOracle } from './components/RitualOracle';
@@ -13,8 +11,8 @@ import StakingPage from './pages/StakingPage';
 import GalleryPage from './pages/GalleryPage';
 import EventLogPage from './pages/EventLogPage';
 import MarketplacePage from './pages/MarketplacePage';
-import MintPage from './pages/MintPage';
-import MiningPage from './pages/MiningPage';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const queryClient = new QueryClient({
