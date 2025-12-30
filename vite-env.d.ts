@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -28,7 +27,7 @@ declare global {
 
   namespace NodeJS {
     interface ProcessEnv {
-      API_KEY: string;
+      VITE_API_KEY: string;
       [key: string]: string | undefined;
     }
   }
