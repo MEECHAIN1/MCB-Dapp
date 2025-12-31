@@ -172,7 +172,7 @@ const MarketplacePage: React.FC = () => {
         
         <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
           <div className="p-6 bg-yellow-500/10 rounded-[2rem] border border-yellow-500/20">
-            <ShieldCheck size={48} className="text-yellow-500" />
+            <ShieldCheck size={26} className="text-yellow-500" />
           </div>
           <div className="flex-1 text-center md:text-left space-y-2">
             <h3 className="text-white font-black uppercase italic tracking-tight text-2xl">Nexus Security Protocol</h3>
