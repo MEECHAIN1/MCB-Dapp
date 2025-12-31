@@ -32,7 +32,7 @@ export const config = createConfig({
   chains: [meeChain],
   connectors: [
     injected(),
-    walletConnect({ projectId: getEnvValue('VITE_WALLETCONNECT_ID', '') }),
+    walletConnect({ projectId: getEnvValue('VITE_WALLETCONNECT_ID', 'b0d81328f8ab0541fdede7db9ff25cb1') }),
 ],
   transports: {
    [meeChain.id]: http(rpcUrl),
