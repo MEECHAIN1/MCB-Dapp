@@ -47,7 +47,7 @@ export const useAppState = create<AppState>()(
         setTimeout(() => set({ ritualSuccess: false }), 8000);
       },
       setLanguage: (lang) => set({ language: lang }),
-      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' })),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN'})),
       
       executeRitual: async (action, options) => {
         const { language, triggerSuccess } = get();
