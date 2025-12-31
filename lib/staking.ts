@@ -1,5 +1,5 @@
 import { PublicClient, WalletClient, Address } from 'viem';
-import { ADRS, MINIMAL_STAKING_ABI } from './contracts';
+import { ADRS, MINIMAL_STAKING_ABI } from './lib/contracts';
 
 export const getEarnedRewards = async (publicClient: PublicClient, address: Address) => {
   return await publicClient.readContract({
