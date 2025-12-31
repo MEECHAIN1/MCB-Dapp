@@ -162,9 +162,9 @@ const MarketplacePage: React.FC = () => {
       </header>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <MarketplaceStat label="Floor Ritual Energy" value="125 MCB" icon={Zap} />
-        <MarketplaceStat label="Total Volume" value="48.2K MCB" icon={BarChart3} />
-        <MarketplaceStat label="Active Listings" value="152 Units" icon={Activity} />
+        <SwapStat label="Floor Ritual Energy" value="125 MCB" icon={Zap} />
+        <SwapStat label="Total Volume" value="48.2K MCB" icon={BarChart3} />
+        <SwapStat label="Active Listings" value="152 Units" icon={Activity} />
       </div>
 
       <div className="bg-zinc-900/10 border border-zinc-800/50 p-10 rounded-[3rem] relative overflow-hidden backdrop-blur-md">
