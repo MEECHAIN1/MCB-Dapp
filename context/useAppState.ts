@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { writeContract, waitForTransactionReceipt, switchChain } from '@wagmi/core';
+import { ADRS, MINIMAL_MINER_ABI } from '../lib/contracts';
 import { config } from '../lib/wagmiConfig';
 import { canAffordGas } from '../lib/gas';
 import { formatUnits } from 'viem';
