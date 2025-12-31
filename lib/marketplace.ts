@@ -1,6 +1,6 @@
 
 import { PublicClient, WalletClient, Address } from 'viem';
-import { ADRS, MINIMAL_SWAP_ABI } from './contracts';
+import { ADRS, MINIMAL_SWAP_ABI } from './lib/contracts';
 
 export const getListing = async (publicClient: PublicClient, tokenId: bigint) => {
   return await publicClient.readContract({
