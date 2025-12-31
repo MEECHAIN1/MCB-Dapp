@@ -9,7 +9,7 @@ import { useAppState } from '../context/useAppState';
 
 const DISCOVERY_BOT_IDS = [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n];
 
-const MarketplaceStat = ({ label, value, icon: Icon }: any) => (
+const SwapStat = ({ label, value, icon: Icon }: any) => (
   <div className="flex items-center gap-4 bg-zinc-950/50 border border-zinc-800/50 p-6 rounded-2xl flex-1">
     <div className="p-3 bg-zinc-900 rounded-xl text-yellow-500">
       <Icon size={16} />
