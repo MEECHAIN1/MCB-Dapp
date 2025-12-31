@@ -198,4 +198,4 @@ const SwapPage: React.FC = () => {
   );
 };
 
-export default MarketplacePage;
+export default SwapPage;
