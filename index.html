@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,19 +9,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
+      // 1. Initialize Global Environment and Polyfills before any modules load
       window.global = window;
       window.process = { 
         env: { 
           NODE_ENV: 'production',
-          VITE_CHAIN_ID: '56',
-          VITE_RPC_URL: '=https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033',
+          VITE_CHAIN_ID: '1337',
+          VITE_RPC_URL: 'https://rpc.meechain.io',
           VITE_CHAIN_NAME: 'MeeChain',
-          VITE_EXPLORER_URL: 'https://meechain1.bolt.host',
+          VITE_EXPLORER_URL: 'https://explorer.meechain.io',
           VITE_NFT_ADDRESS: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
           VITE_STAKING_ADDRESS: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
-          VITE_TOKEN_ADDRESS: '0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9',
-          VITE_SWAP_ADDRESS: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
+          VITE_TOKEN_ADDRESS: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+          VITE_MARKETPLACE_ADDRESS: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
+          VITE_MINER_ADDRESS: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
         } 
+      };
+      var process = window.process;
+      
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { 'nobel-gold': '#C5A059' },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+          }
+        }
       };
     </script>
     <style>
@@ -31,8 +46,7 @@
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         height: 100vh; font-family: 'JetBrains Mono', monospace; text-align: center; padding: 20px;
         background: #000; color: #fff;
-      },
-      
+      }
     </style>
     <script type="importmap">
 {
@@ -64,16 +78,21 @@
   }
 }
 </script>
-   <div id="root"></div>
+  </head>
   <body>
-   <script type="module" src="./index.tsx"></script>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
     <script>
+      // Monitoring global errors that might occur before React boots
       window.onerror = function(msg, url, line, col, error) {
         console.error("Global Catch: ", msg, error);
       };
+
+      // Failsafe timer: Reduced to 10s to give more room for slow ESM resolution
       window.onload = () => {
         setTimeout(() => {
           const root = document.getElementById('root');
+          // If root is still empty OR has not been hydrated by React
           if (root && root.innerHTML === '') {
             console.error("Critical: Application manifest failed to load - Timeout reached.");
             root.innerHTML = `
@@ -83,8 +102,9 @@
                 <p style="color: #666; font-size: 11px; margin: 15px 0; max-width: 300px; line-height: 1.6;">The Nexus bridge could not resolve modules. This usually happens due to a module resolution error or incompatible browser environment.</p>
                 <button onclick="location.reload()" style="padding:12px 24px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Retry Connection</button>
               </div>
-            `};
-          }, 10000);
+            `;
+          }
+        }, 10000);
       };
     </script>
   </body>

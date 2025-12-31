@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { createConfig, http, WagmiProvider, useAccount, useChainId } from 'wagmi';
+import { WagmiProvider, useAccount, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { localhost } from 'viem/chains';
+import { config } from './lib/wagmiConfig';
 import { StatusOverlay } from './components/StatusOverlay';
 import { Navbar } from './components/Navbar';
 import { RitualOracle } from './components/RitualOracle';
@@ -10,7 +10,9 @@ import DashboardPage from './pages/DashboardPage';
 import StakingPage from './pages/StakingPage';
 import GalleryPage from './pages/GalleryPage';
 import EventLogPage from './pages/EventLogPage';
-import SwapPage from './pages/SwapPage';
+import MarketplacePage from './pages/MarketplacePage';
+import MintPage from './pages/MintPage';
+import MiningPage from './pages/MiningPage';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -32,7 +34,7 @@ const GlobalManager: React.FC = () => {
   
   const targetChainId = useMemo(() => {
     const win = window as any;
-    return Number(win.import.meta?.env?.VITE_CHAIN_ID || 56);
+    return Number(win.process?.env?.VITE_CHAIN_ID || 1337);
   }, []);
 
   useEffect(() => {
@@ -47,6 +49,7 @@ const GlobalManager: React.FC = () => {
 
   return null;
 };
+
 const App: React.FC = () => {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
 
@@ -59,7 +62,9 @@ const App: React.FC = () => {
               <StartupLoader key="loader" onComplete={() => setIsAppLoaded(true)} />
             )}
           </AnimatePresence>
+          
           <GlobalManager />
+          
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: isAppLoaded ? 1 : 0 }}
@@ -76,7 +81,7 @@ const App: React.FC = () => {
                     <Route path="/mining" element={<MiningPage />} />
                     <Route path="/staking" element={<StakingPage />} />
                     <Route path="/gallery" element={<GalleryPage />} />
-                    <Route path="/swap" element={<SwapPage />} />
+                    <Route path="/marketplace" element={<MarketplacePage />} />
                     <Route path="/events" element={<EventLogPage />} />
                   </Routes>
                 </main>

@@ -20,6 +20,7 @@ const EventLogPage: React.FC = () => {
   const { setLoading, setError } = useAppState();
   const [isEstablishing, setIsEstablishing] = useState(true);
 
+  // Sync global loading state for log establishment
   useEffect(() => {
     setLoading(isEstablishing);
     const timer = setTimeout(() => {
@@ -29,6 +30,7 @@ const EventLogPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [isEstablishing, setLoading]);
 
+  // Watch NFT Transfers
   useWatchContractEvent({
     address: ADRS.nft as `0x${string}`,
     abi: MINIMAL_NFT_ABI,
@@ -46,6 +48,7 @@ const EventLogPage: React.FC = () => {
     }
   });
 
+  // Watch Staking Events
   useWatchContractEvent({
     address: ADRS.staking as `0x${string}`,
     abi: MINIMAL_STAKING_ABI,
@@ -113,7 +116,7 @@ const EventLogPage: React.FC = () => {
                   </div>
                   <div className="col-span-3 text-right">
                     <a 
-                      href={`https://meechain1.bolt.host/tx/${log.txHash}`} 
+                      href={`https://explorer.meechain.io/tx/${log.txHash}`} 
                       target="_blank" 
                       rel="noreferrer"
                       className="text-[10px] font-mono text-zinc-600 hover:text-yellow-500 transition-colors uppercase"

@@ -149,7 +149,7 @@ export const RitualOracle: React.FC = () => {
     setIsVocalizing(true);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
         contents: [{ parts: [{ text: `Speak as a mystical tech-priest: ${text}` }] }],
@@ -196,9 +196,9 @@ export const RitualOracle: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         contents: query,
         config: {
           systemInstruction: `You are the High Tech-Priest of MeeChain. Speak ritualistically. User metrics: ${stats.mcb} MCB, ${stats.bots} Bots. Language: ${language === 'EN' ? 'English' : 'Thai'}. Keep responses concise but mystical.`,

@@ -18,8 +18,8 @@ export const StatusOverlay: React.FC = () => {
   const currentChainId = useChainId();
   const { isConnected } = useAccount();
   
-  const targetChainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
-  const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com');
+  const targetChainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
+  const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://explorer.meechain.io');
 
   useEffect(() => {
     if (ritualSuccess) {
@@ -67,7 +67,7 @@ export const StatusOverlay: React.FC = () => {
                 </p>
               </div>
               <button onClick={reset} className="text-red-400 hover:text-white p-1 transition-colors">
-                <X size={14} />
+                <X size={16} />
               </button>
             </div>
             
@@ -116,7 +116,7 @@ export const StatusOverlay: React.FC = () => {
               rel="noopener noreferrer"
               className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-cyan-400"
             >
-              <ExternalLink size={12} />
+              <ExternalLink size={14} />
             </a>
           </motion.div>
         )}

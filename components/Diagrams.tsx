@@ -121,7 +121,7 @@ export const TransformerDecoderDiagram: React.FC = () => {
     <div className="flex flex-col items-center p-8 bg-[#F5F4F0] rounded-xl border border-stone-200 my-8">
       <h3 className="font-serif text-xl mb-4 text-stone-900">AlphaQubit Architecture</h3>
       <p className="text-sm text-stone-600 mb-6 text-center max-w-md">
-        The model import.meta syndrome history using a recurrent transformer, attending to spatial and temporal correlations.
+        The model processes syndrome history using a recurrent transformer, attending to spatial and temporal correlations.
       </p>
 
       <div className="relative w-full max-w-lg h-56 bg-white rounded-lg shadow-inner overflow-hidden mb-6 border border-stone-200 flex items-center justify-center gap-8 p-4">

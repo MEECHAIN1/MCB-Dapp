@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { writeContract, waitForTransactionReceipt, switchChain } from '@wagmi/core';
-import { ADRS, MINIMAL_MINER_ABI } from '../lib/contracts';
 import { config } from '../lib/wagmiConfig';
+import { ADRS, MINIMAL_MINER_ABI } from '../lib/contracts';
 import { canAffordGas } from '../lib/gas';
 import { formatUnits } from 'viem';
 
@@ -28,7 +28,7 @@ interface AppState {
 
 const getTargetChainId = () => {
   const win = window as any;
-  return Number(win.import.meta?.env?.VITE_CHAIN_ID || 56);
+  return Number(win.process?.env?.VITE_CHAIN_ID || 1337);
 };
 
 export const useAppState = create<AppState>()(
@@ -38,7 +38,7 @@ export const useAppState = create<AppState>()(
       error: null,
       txHash: null,
       ritualSuccess: false,
-      language: 'TH',
+      language: 'EN',
       setLoading: (loading) => set({ isLoading: loading, error: null }),
       setError: (error) => set({ error: error, isLoading: false }),
       setTxHash: (hash) => set({ txHash: hash }),
@@ -47,7 +47,7 @@ export const useAppState = create<AppState>()(
         setTimeout(() => set({ ritualSuccess: false }), 8000);
       },
       setLanguage: (lang) => set({ language: lang }),
-      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN'})),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
       
       executeRitual: async (action, options) => {
         const { language, triggerSuccess } = get();
@@ -71,9 +71,9 @@ export const useAppState = create<AppState>()(
               if (!gasCheck.ok) {
                 const needed = formatUnits(gasCheck.required, 18);
                 const has = formatUnits(gasCheck.balance, 18);
-                throw new Error(language === 'TH' 
-                  ? `Insufficient MCB for Ritual. Needed: ${needed}, No Have: ${has}` 
-                  : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, ไม่มี: ${has}`
+                throw new Error(language === 'EN' 
+                  ? `Insufficient MCB for Ritual. Needed: ${needed}, Have: ${has}` 
+                  : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, มี: ${has}`
                 );
               }
             }

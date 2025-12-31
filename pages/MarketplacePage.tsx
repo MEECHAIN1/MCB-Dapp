@@ -2,17 +2,17 @@
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { formatUnits, Address } from 'viem';
-import { ADRS, MINIMAL_SWAP_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_MARKETPLACE_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Search, Cpu, ShieldCheck, XCircle, Zap, Activity, BarChart3 } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
 
 const DISCOVERY_BOT_IDS = [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n];
 
-const SwapStat = ({ label, value, icon: Icon }: any) => (
+const MarketplaceStat = ({ label, value, icon: Icon }: any) => (
   <div className="flex items-center gap-4 bg-zinc-950/50 border border-zinc-800/50 p-6 rounded-2xl flex-1">
     <div className="p-3 bg-zinc-900 rounded-xl text-yellow-500">
-      <Icon size={16} />
+      <Icon size={20} />
     </div>
     <div>
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
@@ -28,8 +28,8 @@ const BotListingCard: React.FC<{
   currentAccount?: Address 
 }> = ({ tokenId, onBuy, onCancel, currentAccount }) => {
   const { data: listing, isLoading } = useReadContract({
-    address: ADRS.swap as `0x${string}`,
-    abi: MINIMAL_SWAP_ABI,
+    address: ADRS.marketplace as `0x${string}`,
+    abi: MINIMAL_MARKETPLACE_ABI,
     functionName: 'listings',
     args: [tokenId],
   });
@@ -92,7 +92,7 @@ const BotListingCard: React.FC<{
               onClick={() => onBuy(tokenId, price)}
               className="bg-yellow-500 text-black p-5 rounded-[2rem] hover:bg-yellow-400 transition-all shadow-[0_0_30px_rgba(234,179,8,0.2)] hover:scale-105 active:scale-95"
             >
-              <ShoppingBag size={16} />
+              <ShoppingBag size={24} />
             </button>
           )}
         </div>
@@ -101,7 +101,7 @@ const BotListingCard: React.FC<{
   );
 };
 
-const SwapPage: React.FC = () => {
+const MarketplacePage: React.FC = () => {
   const { address } = useAccount();
   const { executeRitual, setError } = useAppState();
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,8 +115,8 @@ const SwapPage: React.FC = () => {
     }
     await executeRitual(() => 
       writeContractAsync({
-        address: ADRS.swap as `0x${string}`,
-        abi: MINIMAL_SWAP_ABI,
+        address: ADRS.marketplace as `0x${string}`,
+        abi: MINIMAL_MARKETPLACE_ABI,
         functionName: 'buyNFT',
         args: [tokenId],
         value: price,
@@ -127,8 +127,8 @@ const SwapPage: React.FC = () => {
   const handleCancel = async (tokenId: bigint) => {
     await executeRitual(() => 
       writeContractAsync({
-        address: ADRS.swap as `0x${string}`,
-        abi: MINIMAL_SWAP_ABI,
+        address: ADRS.marketplace as `0x${string}`,
+        abi: MINIMAL_MARKETPLACE_ABI,
         functionName: 'cancelListing',
         args: [tokenId],
       })
@@ -162,9 +162,9 @@ const SwapPage: React.FC = () => {
       </header>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <SwapStat label="Floor Ritual Energy" value="125 MCB" icon={Zap} />
-        <SwapStat label="Total Volume" value="48.2K MCB" icon={BarChart3} />
-        <SwapStat label="Active Listings" value="152 Units" icon={Activity} />
+        <MarketplaceStat label="Floor Ritual Energy" value="125 MCB" icon={Zap} />
+        <MarketplaceStat label="Total Volume" value="48.2K MCB" icon={BarChart3} />
+        <MarketplaceStat label="Active Listings" value="152 Units" icon={Activity} />
       </div>
 
       <div className="bg-zinc-900/10 border border-zinc-800/50 p-10 rounded-[3rem] relative overflow-hidden backdrop-blur-md">
@@ -172,7 +172,7 @@ const SwapPage: React.FC = () => {
         
         <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
           <div className="p-6 bg-yellow-500/10 rounded-[2rem] border border-yellow-500/20">
-            <ShieldCheck size={26} className="text-yellow-500" />
+            <ShieldCheck size={48} className="text-yellow-500" />
           </div>
           <div className="flex-1 text-center md:text-left space-y-2">
             <h3 className="text-white font-black uppercase italic tracking-tight text-2xl">Nexus Security Protocol</h3>
@@ -198,4 +198,4 @@ const SwapPage: React.FC = () => {
   );
 };
 
-export default SwapPage;
+export default MarketplacePage;

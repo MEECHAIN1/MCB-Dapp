@@ -1,10 +1,11 @@
+
 import { PublicClient, WalletClient, Address } from 'viem';
-import { ADRS, MINIMAL_SWAP_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_MARKETPLACE_ABI } from './contracts';
 
 export const getListing = async (publicClient: PublicClient, tokenId: bigint) => {
   return await publicClient.readContract({
-    address: ADRS.swap as Address,
-    abi: MINIMAL_SWAP_ABI,
+    address: ADRS.marketplace as Address,
+    abi: MINIMAL_MARKETPLACE_ABI,
     functionName: 'listings',
     args: [tokenId],
   });
@@ -17,8 +18,8 @@ export const listBot = async (
   price: bigint
 ) => {
   return await walletClient.writeContract({
-    address: ADRS.swap as Address,
-    abi: MINIMAL_SWAP_ABI,
+    address: ADRS.marketplace as Address,
+    abi: MINIMAL_MARKETPLACE_ABI,
     functionName: 'listNFT',
     args: [tokenId, price],
     account,
@@ -32,8 +33,8 @@ export const buyBot = async (
   price: bigint
 ) => {
   return await walletClient.writeContract({
-    address: ADRS.swap as Address,
-    abi: MINIMAL_SWAP_ABI,
+    address: ADRS.marketplace as Address,
+    abi: MINIMAL_MARKETPLACE_ABI,
     functionName: 'buyNFT',
     args: [tokenId],
     account,
@@ -47,8 +48,8 @@ export const cancelListing = async (
   tokenId: bigint
 ) => {
   return await walletClient.writeContract({
-    address: ADRS.swap as Address,
-    abi: MINIMAL_SWAP_ABI,
+    address: ADRS.marketplace as Address,
+    abi: MINIMAL_MARKETPLACE_ABI,
     functionName: 'cancelListing',
     args: [tokenId],
     account,

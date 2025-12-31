@@ -6,24 +6,24 @@
 // Helper to safely get environment variables from browser window.process
 const getEnv = (key: string, fallback: string): string => {
   try {
-    // Check window.import.meta.env first (defined in index.html)
+    // Check window.process.env first (defined in index.html)
     const win = window as any;
-    if (win.import.meta?.env?.[key]) return win.import.meta.env[key];
+    if (win.process?.env?.[key]) return win.process.env[key];
     
     // Check import.meta.env as fallback for local dev
     const metaEnv = (import.meta as any).env;
     if (metaEnv && metaEnv[key]) return metaEnv[key];
   } catch (e) {
-
+    // Silent fail
   }
   return fallback;
 };
 
 export const ADRS = {
   nft: getEnv("VITE_NFT_ADDRESS", "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
-  swap: getEnv("VITE_SWAP_ADDRESS", "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
+  marketplace: getEnv("VITE_MARKETPLACE_ADDRESS", "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
   staking: getEnv("VITE_STAKING_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`,
-  token: getEnv("VITE_TOKEN_ADDRESS", "0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9") as `0x${string}`, 
+  token: getEnv("VITE_TOKEN_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512") as `0x${string}`, 
   miner: getEnv("VITE_MINER_ADDRESS", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8") as `0x${string}`,
 };
 
@@ -54,7 +54,7 @@ export const MINIMAL_STAKING_ABI = [
   { name: 'balanceOf', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const;
 
-export const MINIMAL_SWAP_ABI = [
+export const MINIMAL_MARKETPLACE_ABI = [
   { name: 'listNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }, { name: 'price', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
   { name: 'buyNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'payable' },
   { name: 'cancelListing', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
