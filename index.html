@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,12 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
       window.global = window;
-      window.import.meta = { 
+      window.process = { 
         env: { 
+          NODE_ENV: 'production',
           VITE_CHAIN_ID: '56',
-          VITE_RPC_URL: 'https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033',
-          VITE_CHAIN_NAME: 'BSC',
-          VITE_EXPLORER_URL: 'https://bscscan.com',
+          VITE_RPC_URL: '=https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033',
+          VITE_CHAIN_NAME: 'MeeChain',
+          VITE_EXPLORER_URL: 'https://meechain1.bolt.host',
           VITE_NFT_ADDRESS: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
           VITE_STAKING_ADDRESS: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
           VITE_TOKEN_ADDRESS: '0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9',
@@ -71,14 +72,14 @@
     "three": "https://esm.sh/three@^0.182.0",
     "canvas-confetti": "https://esm.sh/canvas-confetti@^1.9.4",
     "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
-    "@wagmi/core": "https://esm.sh/@wagmi/core@^3.0.1",
-  };
-};
+    "@wagmi/core": "https://esm.sh/@wagmi/core@^3.0.1"
+  }
+}
 </script>
   </head>
-     <div id="root"></div>
-   <script type="module" src="index.tsx"></script>
   <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
     <script>
       window.onerror = function(msg, url, line, col, error) {
         console.error("Global Catch: ", msg, error);
@@ -94,11 +95,11 @@
                 <h2 style="color: #C5A059; letter-spacing: 2px;">TERMINAL OFFLINE</h2>
                 <p style="color: #666; font-size: 11px; margin: 15px 0; max-width: 300px; line-height: 1.6;">The Nexus bridge could not resolve modules. This usually happens due to a module resolution error or incompatible browser environment.</p>
                 <button onclick="location.reload()" style="padding:12px 24px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Retry Connection</button>
-      </div>
+              </div>
             `;
           }
         }, 10000);
       };
     </script>
-   </body>
-  </html>
+  </body>
+</html>
