@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from '@zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { writeContract, waitForTransactionReceipt, switchChain } from '@wagmi/core';
 import { ADRS, MINIMAL_MINER_ABI } from '../lib/contracts';
