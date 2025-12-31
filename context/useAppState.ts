@@ -72,8 +72,8 @@ export const useAppState = create<AppState>()(
                 const needed = formatUnits(gasCheck.required, 18);
                 const has = formatUnits(gasCheck.balance, 18);
                 throw new Error(language === 'TH' 
-                  ? `Insufficient MCB for Ritual. Needed: ${needed}, Have: ${has}` 
-                  : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, MEE: ${has}`
+                  ? `Insufficient MCB for Ritual. Needed: ${needed}, No Have: ${has}` 
+                  : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, ไม่มี: ${has}`
                 );
               }
             }
