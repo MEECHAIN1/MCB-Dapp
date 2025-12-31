@@ -6,7 +6,7 @@
 // Helper to safely get environment variables from browser window.process
 const getEnv = (key: string, fallback: string): string => {
   try {
-    // Check window.process.env first (defined in index.html)
+    // Check window.import.meta.env first (defined in index.html)
     const win = window as any;
     if (win.import.meta?.env?.[key]) return win.import.meta.env[key];
     
