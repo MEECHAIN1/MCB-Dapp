@@ -16,7 +16,7 @@ const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://dimensional-newest-film.bsc.
 const meeChain = {
   ...localhost,
   id: chainId,
-  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain'),
+  name: getEnvValue('VITE_CHAIN_NAME', 'BSC Ritual Node'),
   nativeCurrency: { name: 'MeeChain', symbol: 'MCB', decimals: 18 },
   rpcUrls: {
     default: { http: [rpcUrl] },
