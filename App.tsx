@@ -10,7 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 import StakingPage from './pages/StakingPage';
 import GalleryPage from './pages/GalleryPage';
 import EventLogPage from './pages/EventLogPage';
-import MarketplacePage from './pages/MarketplacePage';
+import SwapPage from './pages/SwapPage';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
