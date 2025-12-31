@@ -116,7 +116,7 @@ export const StatusOverlay: React.FC = () => {
               rel="noopener noreferrer"
               className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-cyan-400"
             >
-              <ExternalLink size={14} />
+              <ExternalLink size={12} />
             </a>
           </motion.div>
         )}
