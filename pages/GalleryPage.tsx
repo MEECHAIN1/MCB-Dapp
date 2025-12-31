@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWatchContractEvent, useWriteContract } from 'wagmi';
-import { ADRS, MINIMAL_NFT_ABI, MINIMAL_MARKETPLACE_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_NFT_ABI, MINIMAL_SWAP_ABI } from '../lib/contracts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Box, History, ExternalLink, Cpu, Tag, DollarSign, X, CheckCircle2 } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
