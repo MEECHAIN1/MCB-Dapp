@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { formatUnits } from 'viem';
-import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_ERC20_ABI, MINIMAL_NFT_ABI, MINIMAL_TOKEN_ABI, MINIMAL_SWAP_ABI,  MINIMAL_STAKING_ABI, } from '../lib/contracts';
 import { motion } from 'framer-motion';
 import { Coins, Layers, TrendingUp, Shield, Binary, Plus, ShoppingBag } from 'lucide-react';
 import { HeroScene } from '../components/QuantumScene';
