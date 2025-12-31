@@ -23,7 +23,8 @@ const meeChain = {
     public: { http: [rpcUrl] },
   },
   blockExplorers: {
-    default: { name: 'BscScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com') },
+    default: { name: 'BscScan', url: getEnvValue('VITE_EXPLORER_URL', 
+'https://bscscan.com') },
   },
 };
 
