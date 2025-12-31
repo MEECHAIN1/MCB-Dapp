@@ -31,7 +31,8 @@ export const config = createConfig({
   chains: [meeChain],
   connectors: [
     injected(),
-  ],
+    walletConnect({ projectId: getEnvValue('VITE_WALLETCONNECT_ID', '') }),
+],
   transports: {
    [meeChain.id]: http(rpcUrl),
   },
