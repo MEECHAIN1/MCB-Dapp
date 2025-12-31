@@ -60,9 +60,7 @@ const App: React.FC = () => {
               <StartupLoader key="loader" onComplete={() => setIsAppLoaded(true)} />
             )}
           </AnimatePresence>
-          
           <GlobalManager />
-          
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: isAppLoaded ? 1 : 0 }}
