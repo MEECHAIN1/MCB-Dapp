@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAccount, useReadContract, useWriteContract } from 'wagmi';
 import { formatUnits, Address } from 'viem';
-import { ADRS, MINIMAL_MARKETPLACE_ABI } from '../lib/contracts';
+import { ADRS, MINIMAL_SWAP_ABI } from '../lib/contracts';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Search, Cpu, ShieldCheck, XCircle, Zap, Activity, BarChart3 } from 'lucide-react';
 import { useAppState } from '../context/useAppState';
