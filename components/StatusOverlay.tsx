@@ -18,7 +18,7 @@ export const StatusOverlay: React.FC = () => {
   const currentChainId = useChainId();
   const { isConnected } = useAccount();
   
-  const targetChainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
+  const targetChainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
   const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://explorer.meechain.io');
 
   useEffect(() => {
