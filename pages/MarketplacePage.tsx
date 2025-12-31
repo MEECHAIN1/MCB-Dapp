@@ -28,8 +28,8 @@ const BotListingCard: React.FC<{
   currentAccount?: Address 
 }> = ({ tokenId, onBuy, onCancel, currentAccount }) => {
   const { data: listing, isLoading } = useReadContract({
-    address: ADRS.marketplace as `0x${string}`,
-    abi: MINIMAL_MARKETPLACE_ABI,
+    address: ADRS.swap as `0x${string}`,
+    abi: MINIMAL_SWAP_ABI,
     functionName: 'listings',
     args: [tokenId],
   });
