@@ -92,10 +92,6 @@
                 <h2 style="color: #C5A059; letter-spacing: 2px;">TERMINAL OFFLINE</h2>
                 <p style="color: #666; font-size: 11px; margin: 15px 0; max-width: 300px; line-height: 1.6;">The Nexus bridge could not resolve modules. This usually happens due to a module resolution error or incompatible browser environment.</p>
                 <button onclick="location.reload()" style="padding:12px 24px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Retry Connection</button>
-                <button className="flex items-center gap-2 bg-[#C5A059] text-black px-4 py-2 rounded-lg font-bold">
-  {isConnecting && <SpinnerIcon className="animate-spin h-5 w-5" />}
-  {isConnecting ? 'IDENTIFYING...' : 'IDENTIFY RITUALIST'}
-</button>
       </div>
             `;
           }
