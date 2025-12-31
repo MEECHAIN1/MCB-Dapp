@@ -101,7 +101,7 @@ const BotListingCard: React.FC<{
   );
 };
 
-const MarketplacePage: React.FC = () => {
+const SwapPage: React.FC = () => {
   const { address } = useAccount();
   const { executeRitual, setError } = useAppState();
   const [searchTerm, setSearchTerm] = useState('');
