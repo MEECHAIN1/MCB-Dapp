@@ -12,7 +12,7 @@ const genAI = new GoogleGenerativeAI(
 
 export const getMeeBotResponse = async (prompt: string) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     // ตั้งค่าบุคลิกภาพให้ MeeBot (System Instruction)
     const chat = model.startChat({
