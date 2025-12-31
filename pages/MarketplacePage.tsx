@@ -92,7 +92,7 @@ const BotListingCard: React.FC<{
               onClick={() => onBuy(tokenId, price)}
               className="bg-yellow-500 text-black p-5 rounded-[2rem] hover:bg-yellow-400 transition-all shadow-[0_0_30px_rgba(234,179,8,0.2)] hover:scale-105 active:scale-95"
             >
-              <ShoppingBag size={24} />
+              <ShoppingBag size={16} />
             </button>
           )}
         </div>
