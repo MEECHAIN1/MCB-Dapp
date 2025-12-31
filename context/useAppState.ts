@@ -38,7 +38,7 @@ export const useAppState = create<AppState>()(
       error: null,
       txHash: null,
       ritualSuccess: false,
-      language: 'EN',
+      language: 'TH',
       setLoading: (loading) => set({ isLoading: loading, error: null }),
       setError: (error) => set({ error: error, isLoading: false }),
       setTxHash: (hash) => set({ txHash: hash }),
