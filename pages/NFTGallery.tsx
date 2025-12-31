@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ethers } from 'ethers';
 import { getOwnedMeeBots } from '../lib/services/web3Service';
-import { SpinnerIcon } from './Icons';
-import { parts } from './lib/meebotParts';
+import { SpinnerIcon } from '../Icons';
+import { parts } from '../lib/meebotParts';
 
 interface NFT {
   tokenId: string;
