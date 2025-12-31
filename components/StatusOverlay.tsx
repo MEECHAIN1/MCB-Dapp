@@ -67,7 +67,7 @@ export const StatusOverlay: React.FC = () => {
                 </p>
               </div>
               <button onClick={reset} className="text-red-400 hover:text-white p-1 transition-colors">
-                <X size={16} />
+                <X size={14} />
               </button>
             </div>
             
