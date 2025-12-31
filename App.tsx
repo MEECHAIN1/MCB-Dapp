@@ -47,7 +47,6 @@ const GlobalManager: React.FC = () => {
 
   return null;
 };
-
 const App: React.FC = () => {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
 
