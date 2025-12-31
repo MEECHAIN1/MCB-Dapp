@@ -7,7 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ดึง API Key จาก Environment Variables ที่เราตั้งไว้ใน index.html
 const genAI = new GoogleGenerativeAI(
-  (window as any).process?.env?.VITE_API_KEY || ""
+  (window as any).import.meta?.env?.VITE_API_KEY || ""
 );
 
 export const getMeeBotResponse = async (prompt: string) => {
