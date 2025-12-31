@@ -8,7 +8,7 @@ const getEnv = (key: string, fallback: string): string => {
   try {
     // Check window.process.env first (defined in index.html)
     const win = window as any;
-    if (win.process?.env?.[key]) return win.process.env[key];
+    if (win.import.meta?.env?.[key]) return win.import.meta.env[key];
     
     // Check import.meta.env as fallback for local dev
     const metaEnv = (import.meta as any).env;
