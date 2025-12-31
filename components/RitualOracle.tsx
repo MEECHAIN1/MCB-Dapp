@@ -149,7 +149,7 @@ export const RitualOracle: React.FC = () => {
     setIsVocalizing(true);
     
     try {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
         contents: [{ parts: [{ text: `Speak as a mystical tech-priest: ${text}` }] }],
