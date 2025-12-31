@@ -17,13 +17,8 @@ export default defineConfig(({ mode }) => {
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1000
       },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
     rollupOptions: {
       output: {
         manualChunks: {
@@ -35,4 +30,4 @@ export default defineConfig(({ mode }) => {
            }
         }
     };
-);
+});
