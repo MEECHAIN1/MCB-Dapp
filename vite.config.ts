@@ -11,7 +11,7 @@ export default defineConfig({
     allowedHosts: true
   },
   define: {
-    'import.meta.env.VITE_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || process.env.VITE_API_KEY || ''),
+    'import.meta.env.VITE_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || import.meta.env.VITE_API_KEY || ''),
   },
   build: {
     outDir: 'dist',
