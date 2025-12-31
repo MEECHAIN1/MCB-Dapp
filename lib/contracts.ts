@@ -54,7 +54,7 @@ export const MINIMAL_STAKING_ABI = [
   { name: 'balanceOf', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const;
 
-export const MINIMAL_MARKETPLACE_ABI = [
+export const MINIMAL_SWAP_ABI = [
   { name: 'listNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }, { name: 'price', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
   { name: 'buyNFT', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'payable' },
   { name: 'cancelListing', type: 'function', inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
