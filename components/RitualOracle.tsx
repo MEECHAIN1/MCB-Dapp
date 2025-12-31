@@ -198,7 +198,7 @@ export const RitualOracle: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.5-flash',
         contents: query,
         config: {
           systemInstruction: `You are the High Tech-Priest of MeeChain. Speak ritualistically. User metrics: ${stats.mcb} MCB, ${stats.bots} Bots. Language: ${language === 'EN' ? 'English' : 'Thai'}. Keep responses concise but mystical.`,
