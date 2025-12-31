@@ -13,7 +13,7 @@ export const Navbar: React.FC = () => {
   const currentChainId = useChainId();
   const { language, toggleLanguage, handleSwitchNetwork } = useAppState();
   
-  const targetChainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 1337);
+  const targetChainId = Number((import.meta as any).env?.VITE_CHAIN_ID || 56);
   const isCorrectNetwork = currentChainId === targetChainId;
 
   const activeStyle = "text-yellow-500 border-b-2 border-yellow-500 pb-1";
