@@ -42,7 +42,7 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
             address: ADRS.nft as `0x${string}`,
             abi: MINIMAL_NFT_ABI,
             functionName: 'setApprovalForAll',
-            args: [ADRS.marketplace as `0x${string}`, true],
+            args: [ADRS.swap as `0x${string}`, true],
           })
         );
         await refetchApproval();
@@ -61,7 +61,7 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
       await executeRitual(() => 
         writeContractAsync({
           address: ADRS.marketplace as `0x${string}`,
-          abi: MINIMAL_MARKETPLACE_ABI,
+          abi: MINIMAL_SWAP_ABI,
           functionName: 'listNFT',
           args: [tokenId, parseUnits(price, 18)],
         })
@@ -146,7 +146,7 @@ const SellModal = ({ tokenId, isOpen, onClose }: { tokenId: bigint, isOpen: bool
                   className="flex items-center gap-2 justify-center text-blue-400 text-[8px] font-mono uppercase tracking-widest bg-blue-500/5 py-2 rounded-xl border border-blue-500/20"
                 >
                   <CheckCircle2 size={12} />
-                  First-time Marketplace Approval Required
+                  First-time Swap Approval Required
                 </motion.div>
               )}
             </AnimatePresence>
