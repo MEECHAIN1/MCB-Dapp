@@ -67,7 +67,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="../index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
     <script>
       window.onerror = function(msg, url, line, col, error) {
         console.error("Global Catch: ", msg, error);
@@ -85,8 +85,7 @@
                 <button onclick="location.reload()" style="padding:12px 24px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Retry Connection</button>
               </div>
             `};
-          }
-         10000);
+          }, 10000);
       };
     </script>
   </body>
