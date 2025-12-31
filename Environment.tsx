@@ -1,11 +1,15 @@
 import { Environment } from '@react-three/drei';
 
-function MyScene() {
+export function MeeBotScene() {
   return (
     <>
-      {/* Reference the local file path */}
-      <Environment files="/hdri/dikhololo_night_1k.hdr" background />
-      {/* Your other 3D objects */}
+      {/* ระบบจะวิ่งไปหาที่ public/hdri/ โดยอัตโนมัติเมื่อรันบนเบราว์เซอร์ */}
+      <Environment 
+        files="/hdri/dikhololo_night_1k.hdr" 
+        background 
+        blur={0.05} // เพิ่มความฟุ้งของพื้นหลังเล็กน้อยเพื่อให้หุ่นยนต์ดูเด่นขึ้น
+      />
+      {/* ใส่โมเดล MeeBot ของคุณที่นี่ */}
     </>
   );
 }
