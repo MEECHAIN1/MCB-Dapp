@@ -115,8 +115,8 @@ const MarketplacePage: React.FC = () => {
     }
     await executeRitual(() => 
       writeContractAsync({
-        address: ADRS.marketplace as `0x${string}`,
-        abi: MINIMAL_MARKETPLACE_ABI,
+        address: ADRS.swap as `0x${string}`,
+        abi: MINIMAL_SWAP_ABI,
         functionName: 'buyNFT',
         args: [tokenId],
         value: price,
