@@ -5,7 +5,7 @@ import { injected } from 'wagmi/connectors';
 const getEnvValue = (key: string, fallback: string): string => {
   try {
     const win = window as any;
-    if (win.process?.env?.[key]) return win.process.env[key];
+    if (win.import.meta?.env?.[key]) return win.import.meta.env[key];
   } catch (e) {}
   return fallback;
 };
