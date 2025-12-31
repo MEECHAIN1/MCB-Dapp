@@ -127,8 +127,8 @@ const MarketplacePage: React.FC = () => {
   const handleCancel = async (tokenId: bigint) => {
     await executeRitual(() => 
       writeContractAsync({
-        address: ADRS.marketplace as `0x${string}`,
-        abi: MINIMAL_MARKETPLACE_ABI,
+        address: ADRS.swap as `0x${string}`,
+        abi: MINIMAL_SWAP_ABI,
         functionName: 'cancelListing',
         args: [tokenId],
       })
