@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createConfig, http, WagmiProvider, useAccount, useChainId } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from 'tanstack/react-query';
 import { localhost } from 'viem/chains';
 import { StatusOverlay } from './components/StatusOverlay';
 import { Navbar } from './components/Navbar';
