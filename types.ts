@@ -14,7 +14,7 @@ export interface SectionProps {
 
 export interface Laureate {
   name: string;
-  image: string; // placeholder url
+  image: string;
   role: string;
   desc: string;
 }

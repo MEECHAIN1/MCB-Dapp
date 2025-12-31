@@ -2,7 +2,6 @@ import { createConfig, http } from 'wagmi';
 import { localhost } from 'viem/chains';
 import { injected } from 'wagmi/connectors';
 
-// Safely access environment variables from the window.process.env initialized in index.html
 const getEnvValue = (key: string, fallback: string): string => {
   try {
     const win = window as any;
@@ -11,14 +10,14 @@ const getEnvValue = (key: string, fallback: string): string => {
   return fallback;
 };
 
-const chainId = Number(getEnvValue('VITE_CHAIN_ID', '1337'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://rpc.meechain.io');
+const chainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
+const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033');
 
 const meeChain = {
   ...localhost,
   id: chainId,
   name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain'),
-  nativeCurrency: { name: 'MeeChain Bot', symbol: 'MCB', decimals: 18 },
+  nativeCurrency: { name: 'MeeChain', symbol: 'MCB', decimals: 18 },
   rpcUrls: {
     default: { http: [rpcUrl] },
     public: { http: [rpcUrl] },
@@ -32,8 +31,11 @@ export const config = createConfig({
   chains: [meeChain],
   connectors: [
     injected(),
-  ],
+    walletConnect({ projectId: getEnvValue('VITE_WALLETCONNECT_ID', '') }),
+],
   transports: {
-    [meeChain.id]: http(rpcUrl),
+   [meeChain.id]: http(rpcUrl),
   },
 });
+
+export const getDefaultConfig = (params: any) => config;
