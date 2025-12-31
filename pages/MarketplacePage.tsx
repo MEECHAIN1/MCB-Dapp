@@ -12,7 +12,7 @@ const DISCOVERY_BOT_IDS = [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n];
 const MarketplaceStat = ({ label, value, icon: Icon }: any) => (
   <div className="flex items-center gap-4 bg-zinc-950/50 border border-zinc-800/50 p-6 rounded-2xl flex-1">
     <div className="p-3 bg-zinc-900 rounded-xl text-yellow-500">
-      <Icon size={20} />
+      <Icon size={16} />
     </div>
     <div>
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
