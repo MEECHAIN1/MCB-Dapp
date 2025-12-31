@@ -1,6 +1,6 @@
-import { createConfig, http } from '@wagmi';
-import { localhost } from '@viem/chains';
-import { injected } from '@wagmi/connectors';
+import { createConfig, http } from 'wagmi';
+import { localhost } from 'viem/chains';
+import { injected } from 'wagmi/connectors';
 
 const getEnvValue = (key: string, fallback: string): string => {
   try {
