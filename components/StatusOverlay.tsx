@@ -19,7 +19,7 @@ export const StatusOverlay: React.FC = () => {
   const { isConnected } = useAccount();
   
   const targetChainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
-  const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://explorer.meechain.io');
+  const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com');
 
   useEffect(() => {
     if (ritualSuccess) {
