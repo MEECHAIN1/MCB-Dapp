@@ -11,7 +11,7 @@ const getEnvValue = (key: string, fallback: string): string => {
 };
 
 const chainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', '127.0.0.1:9545');
+const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033');
 
 const meeChain = {
   ...localhost,
