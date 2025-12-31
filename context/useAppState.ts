@@ -28,7 +28,7 @@ interface AppState {
 
 const getTargetChainId = () => {
   const win = window as any;
-  return Number(win.process?.env?.VITE_CHAIN_ID || 1337);
+  return Number(win.process?.env?.VITE_CHAIN_ID || 56);
 };
 
 export const useAppState = create<AppState>()(
@@ -47,7 +47,7 @@ export const useAppState = create<AppState>()(
         setTimeout(() => set({ ritualSuccess: false }), 8000);
       },
       setLanguage: (lang) => set({ language: lang }),
-      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' : 'EN' })),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'EN' ? 'TH' })),
       
       executeRitual: async (action, options) => {
         const { language, triggerSuccess } = get();
