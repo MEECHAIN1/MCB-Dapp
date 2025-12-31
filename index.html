@@ -79,7 +79,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
     <script>
       window.onerror = function(msg, url, line, col, error) {
         console.error("Global Catch: ", msg, error);
@@ -101,5 +100,6 @@
         }, 10000);
       };
     </script>
+   <script type="module" src="./index.tsx"></script>
   </body>
 </html>
