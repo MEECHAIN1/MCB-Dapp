@@ -64,5 +64,3 @@ export const MINIMAL_SWAP_ABI = [
 export const MINIMAL_MINER_ABI = [
   { name: 'ritualMint', type: 'function', inputs: [], outputs: [], stateMutability: 'nonpayable' },
 ] as const;
-
-export const MINIMAL_MARKETPLACE_ABI = MINIMAL_SWAP_ABI;
