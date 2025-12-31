@@ -32,7 +32,7 @@ const GlobalManager: React.FC = () => {
   
   const targetChainId = useMemo(() => {
     const win = window as any;
-    return Number(win.process?.env?.VITE_CHAIN_ID || 56);
+    return Number(win.import.meta?.env?.VITE_CHAIN_ID || 56);
   }, []);
 
   useEffect(() => {
