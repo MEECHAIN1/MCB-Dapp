@@ -13,7 +13,7 @@ import App from './App';
 (window as any).global = window;
 
 const handleFatalError = (error: any) => {
-  console.error('Terminal Initialization Failure:', error);
+  console.error('Terminal Initialization Failure:', error)
   const root = document.getElementById('root');
   if (root) {
     root.innerHTML = `
