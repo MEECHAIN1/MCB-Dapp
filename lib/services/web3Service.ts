@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { ADRS, MINIMAL_NFT_ABI } from '../contracts';
+import { ADRS, MINIMAL_NFT_ABI } from '../lib/contracts';
 
 /**
  * ฟังก์ชันดึงข้อมูล MeeBots ที่ผู้ใช้ครอบครอง
