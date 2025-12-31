@@ -28,8 +28,7 @@ export default function MiningPage() {
     }
   }[language];
 
-  const explorerUrl = (import.meta as any).env?.VITE_EXPLORER_URL || 'https://explorer.meechain.io';
-
+  const explorerUrl = (import.meta as any).env?.VITE_EXPLORER_URL || 'https://bscscan.com';
   return (
     <div className="max-w-4xl mx-auto space-y-12 py-10 min-h-[70vh] flex flex-col justify-center">
       <header className="text-center space-y-4">
