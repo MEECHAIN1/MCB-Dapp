@@ -4,7 +4,7 @@ import { ADRS, MINIMAL_SWAP_ABI } from './contracts';
 
 export const getListing = async (publicClient: PublicClient, tokenId: bigint) => {
   return await publicClient.readContract({
-    address: ADRS.marketplace as Address,
+    address: ADRS.swap as Address,
     abi: MINIMAL_SWAP_ABI,
     functionName: 'listings',
     args: [tokenId],
