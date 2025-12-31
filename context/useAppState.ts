@@ -28,7 +28,7 @@ interface AppState {
 
 const getTargetChainId = () => {
   const win = window as any;
-  return Number(win.process?.env?.VITE_CHAIN_ID || 56);
+  return Number(win.import.meta?.env?.VITE_CHAIN_ID || 56);
 };
 
 export const useAppState = create<AppState>()(
