@@ -27,7 +27,7 @@ const MintPage: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.VITE_API_KEY || '' });
       const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         contents: "Forge a unique cyber-bot profile for the MeeChain Ritual. Provide a cryptic name, an arcane class (e.g. Chronos-Wraith, Void-Stalker, Nexus-Anchor, Binary-Lich), an evocative and mysterious bio steeped in techno-ritualistic lore (mentioning circuits, souls, cosmic flux, or forbidden silicon rituals), and a power level (1-100). Respond in JSON format.",
         config: {
           responseMimeType: "application/json",
