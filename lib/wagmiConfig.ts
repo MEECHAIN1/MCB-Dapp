@@ -1,6 +1,7 @@
 import { createConfig, http } from 'wagmi';
 import { localhost } from 'viem/chains';
 import { injected } from 'wagmi/connectors';
+import { gas } from './lib/gas';
 
 // Safely access environment variables from the window.process.env initialized in index.html
 const getEnvValue = (key: string, fallback: string): string => {
