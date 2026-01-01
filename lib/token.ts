@@ -1,5 +1,5 @@
 
-import { PublicClient, WalletClient, Address } from 'viem';
+import { PublicClient, WalletClient, Address, gas } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI } from './lib/contracts';
 import { gas } from './lib/gas';
 
