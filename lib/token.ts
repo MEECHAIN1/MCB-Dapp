@@ -1,7 +1,6 @@
 
 import { PublicClient, WalletClient, Address, gas } from 'viem';
 import { ADRS, MINIMAL_ERC20_ABI } from './lib/contracts';
-import { gas } from './lib/gas';
 
 export const getTokenBalance = async (publicClient: PublicClient, address: Address) => {
   return await publicClient.readContract({
