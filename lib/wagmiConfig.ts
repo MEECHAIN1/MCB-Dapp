@@ -17,14 +17,14 @@ const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://bscscan.com');
 const meeChain = {
   ...localhost,
   id: chainId,
-  name: getEnvValue('VITE_CHAIN_NAME', 'MeeChain'),
-  nativeCurrency: { name: 'MeeChain Bot', symbol: 'MCB', decimals: 18 },
+  name: getEnvValue('VITE_CHAIN_NAME', 'BCS'),
+  nativeCurrency: { name: 'MeeChain', symbol: 'MCB', decimals: 18 },
   rpcUrls: {
     default: { http: [rpcUrl] },
     public: { http: [rpcUrl] },
   },
   blockExplorers: {
-    default: { name: 'MeeScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://explorer.meechain.io') },
+    default: { name: 'BcsScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com') },
   },
 };
 
