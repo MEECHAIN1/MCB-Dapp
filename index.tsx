@@ -47,6 +47,7 @@ const boot = () => {
         <App />
       </React.StrictMode>
     );
+    
     console.log("Nexus UI Thread Manifested.");
   } catch (err) {
     handleFatalError(err);
