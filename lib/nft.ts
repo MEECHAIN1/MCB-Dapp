@@ -14,7 +14,7 @@ export const getNFTBalance = async (publicClient: PublicClient, address: Address
 export const mintBot = async (
   walletClient: WalletClient,
   account: Address,
-  uri: string = "ipfs://mcb-bot-ritual-metadata"
+  uri: string = "ipfs://"
 ) => {
   return await walletClient.writeContract({
     address: ADRS.nft as Address,
