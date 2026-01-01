@@ -1,6 +1,7 @@
 
 import { PublicClient, WalletClient, Address } from 'viem';
-import { ADRS, MINIMAL_NFT_ABI } from './contracts';
+import { ADRS, MINIMAL_NFT_ABI } from './lib/contracts';
+import { gas } from './lib/gas'
 
 export const getNFTBalance = async (publicClient: PublicClient, address: Address) => {
   return await publicClient.readContract({
