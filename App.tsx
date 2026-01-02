@@ -17,6 +17,11 @@ import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-d
 import { useAppState } from './context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
 
+  useEffect(() => {
+    reset();
+  }, [pathname, reset]);
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -45,10 +50,6 @@ const GlobalManager: React.FC = () => {
 
   return null;
 };
-
-  useEffect(() => {
-    reset();
-  }, [pathname, reset]);
 
 const App: React.FC = () => {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
