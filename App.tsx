@@ -46,6 +46,10 @@ const GlobalManager: React.FC = () => {
   return null;
 };
 
+  useEffect(() => {
+    reset();
+  }, [pathname, reset]);
+
 const App: React.FC = () => {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
 
