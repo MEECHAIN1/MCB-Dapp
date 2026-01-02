@@ -21,7 +21,6 @@ import { AnimatePresence, motion } from 'framer-motion';
     reset();
   }, [pathname, reset]);
 
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
