@@ -38,10 +38,6 @@ const GlobalManager: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    reset();
-  }, [pathname, reset]);
-
-  useEffect(() => {
     if (isConnected && currentChainId !== targetChainId) {
       setError(`Network Mismatch: Please connect to the ritual chain (Chain ID: ${targetChainId})`);
     }
