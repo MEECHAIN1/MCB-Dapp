@@ -13,7 +13,7 @@ export default defineConfig({
   define: {
     // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
     // into the bundled code as process.env.API_KEY
-    'process.env.API_KEY': JSON.stringify(process.env.VIET_API_KEY || process.env.VITE_API_KEY || ''),
+    'process.env.VITE_API_KEY': JSON.stringify(process.env.VIET_API_KEY || process.env.VITE_API_KEY || ''),
   },
   build: {
     outDir: 'dist',
