@@ -1,5 +1,5 @@
 {
-  "name": "MeeChain MeeBot DApp",
+  "name": "MeeChain MeeBot",
   "description": "A robust ritual-themed interface for staking MCB tokens and managing MCB-Bot cybernetic assets on MeeChain.",
   "requestFramePermissions": [
     "microphone"

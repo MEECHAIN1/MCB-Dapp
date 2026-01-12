@@ -3,31 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MeeChain MeeBot DApp</title>
+    <title>MeeChain MeeBot DApp | Nexus Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
-      // 1. Initialize Global Environment and Polyfills before any modules load
+      // 1. Critical Nexus Polyfills & Config
       window.global = window;
-      window.process = {
-        env: {
+      window.process = { 
+        env: { 
           NODE_ENV: 'production',
           VITE_CHAIN_ID: '56',
           VITE_RPC_URL: 'https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033',
-          VITE_CHAIN_NAME: 'BCS',
+          VITE_CHAIN_NAME: 'BSC Ritual Node',
           VITE_EXPLORER_URL: 'https://bscscan.com',
           VITE_NFT_ADDRESS: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-          VITE_STAKING_ADDRESS: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+          VITE_STAKING_ADDRESS: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
           VITE_TOKEN_ADDRESS: '0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9',
           VITE_MARKETPLACE_ADDRESS: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9',
-          VITE_MINER_ADDRESS: '0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9',
-          VITE_WALLETCONNECT_ID: 'b0d81328f8ab0541fdede7db9ff25cb1'
-        }
+          VITE_MINER_ADDRESS: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+          VITE_WALLETCONNECT_PROJECT_ID: '3a8170812b1a5e812d8a9e73950f1406'
+        } 
       };
-      var process = window.process;
       
+      if (typeof window.Buffer === 'undefined') {
+        window.Buffer = { 
+          isBuffer: () => false,
+          from: (s) => ({ toString: () => s }),
+          alloc: (n) => new Uint8Array(n)
+        };
+      }
+
       tailwind.config = {
         theme: {
           extend: {
@@ -45,37 +52,48 @@
       #root { min-height: 100vh; }
       .emergency-ui {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        height: 100vh; font-family: 'JetBrains Mono', monospace; text-align: center; padding: 20px;
+        height: 100vh; font-family: 'Inter', sans-serif; text-align: center; padding: 20px;
         background: #000; color: #fff;
       }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #C5A059; }
     </style>
     <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+    "wagmi": "https://esm.sh/wagmi@2.14.9?deps=react@19.0.0",
+    "wagmi/connectors": "https://esm.sh/wagmi@2.14.9/connectors?deps=react@19.0.0",
+    "@wagmi/core": "https://esm.sh/@wagmi/core@2.16.4?deps=react@19.0.0",
+    "zustand": "https://esm.sh/zustand@5.0.3",
+    "zustand/middleware": "https://esm.sh/zustand@5.0.3/middleware",
+    "viem": "https://esm.sh/viem@2.22.10",
+    "viem/chains": "https://esm.sh/viem@2.22.10/chains",
+    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@5.66.0?deps=react@19.0.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@7.1.5?deps=react@19.0.0",
+    "framer-motion": "https://esm.sh/framer-motion@12.4.2?deps=react@19.0.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.469.0?deps=react@19.0.0",
+    "@google/genai": "https://esm.sh/@google/genai@0.22.0",
+    "canvas-confetti": "https://esm.sh/canvas-confetti@1.9.3",
+    "buffer": "https://esm.sh/buffer@6.0.3",
+    "three": "https://esm.sh/three@0.173.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@9.0.0-alpha.8?deps=react@19.0.0,three@0.173.0",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@10.0.0-alpha.5?deps=react@19.0.0,three@0.173.0",
+    "@/": "./",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "wagmi": "https://esm.sh/wagmi@^3.1.2",
-    "zustand": "https://esm.sh/zustand@^5.0.9",
-    "zustand/": "https://esm.sh/zustand@^5.0.9/",
-    "viem": "https://esm.sh/viem@^2.43.3",
-    "vitest": "https://esm.sh/vitest@^4.0.16",
-    "vite": "https://esm.sh/vite@^7.3.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "viem/": "https://esm.sh/viem@^2.43.3/",
-    "wagmi/": "https://esm.sh/wagmi@^3.1.2/",
-    "vitest/": "https://esm.sh/vitest@^4.0.16/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "buffer": "https://esm.sh/buffer@^6.0.3",
-    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@^5.90.12",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
-    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.4.2",
-    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
-    "three": "https://esm.sh/three@^0.182.0",
-    "canvas-confetti": "https://esm.sh/canvas-confetti@^1.9.4",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
-    "@wagmi/core": "https://esm.sh/@wagmi/core@^3.0.1"
+    "zustand/": "https://esm.sh/zustand@^5.0.9/",
+    "vitest/": "https://esm.sh/vitest@^4.0.16/",
+    "vitest": "https://esm.sh/vitest@^4.0.16",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "viem/": "https://esm.sh/viem@^2.43.5/",
+    "wagmi/": "https://esm.sh/wagmi@^3.2.0/"
   }
 }
 </script>
@@ -84,29 +102,23 @@
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
     <script>
-      // Monitoring global errors that might occur before React boots
-      window.onerror = function(msg, url, line, col, error) {
-        console.error("Global Catch: ", msg, error);
-      };
-
-      // Failsafe timer: Reduced to 10s to give more room for slow ESM resolution
-      window.onload = () => {
+      // Enhanced Nexus Recovery Bridge
+      window.addEventListener('load', () => {
         setTimeout(() => {
           const root = document.getElementById('root');
-          // If root is still empty OR has not been hydrated by React
-          if (root && root.innerHTML === '') {
-            console.error("Critical: Application manifest failed to load - Timeout reached.");
+          if (root && root.children.length === 0) {
+            console.warn("Nexus Sync: การแสดงผลล้มเหลว กำลังเริ่มต้นโปรโตคอลบริดจ์ใหม่");
             root.innerHTML = `
               <div class="emergency-ui">
-                <div style="font-size: 40px; margin-bottom: 20px;">📡</div>
-                <h2 style="color: #C5A059; letter-spacing: 2px;">TERMINAL OFFLINE</h2>
-                <p style="color: #666; font-size: 11px; margin: 15px 0; max-width: 300px; line-height: 1.6;">The Nexus bridge could not resolve modules. This usually happens due to a module resolution error or incompatible browser environment.</p>
-                <button onclick="location.reload()" style="padding:12px 24px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Retry Connection</button>
+                <div style="font-size: 64px; margin-bottom: 24px; filter: drop-shadow(0 0 20px rgba(197,160,89,0.4));">📡</div>
+                <h2 style="color: #C5A059; letter-spacing: 0.2em; font-weight: 900; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">Nexus Offline</h2>
+                <p style="color: #666; font-size: 13px; margin: 0 0 40px 0; max-width: 420px; line-height: 1.8; font-family: 'Inter', sans-serif;">ตรวจพบความขัดแย้งในโปรโตคอลการเชื่อมต่อ<br/>กรุณาคลิกปุ่มด้านล่างเพื่อเริ่มการ Manifest ใหม่</p>
+                <button onclick="location.reload()" style="padding:18px 40px; background: #C5A059; border: none; color: #000; cursor: pointer; border-radius: 16px; font-weight: 900; text-transform: uppercase; font-size: 11px; letter-spacing: 0.2em; transition: 0.3s; box-shadow: 0 10px 30px rgba(197,160,89,0.3); font-family: 'JetBrains Mono', monospace;">เชื่อมต่อใหม่</button>
               </div>
             `;
           }
-        }, 10000);
-      };
+        }, 8000);
+      });
     </script>
   </body>
 </html>

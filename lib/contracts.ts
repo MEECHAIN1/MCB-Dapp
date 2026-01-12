@@ -3,28 +3,42 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Helper to safely get environment variables from browser window.process
+// Helper to safely get environment variables with guaranteed string return and validation
 const getEnv = (key: string, fallback: string): string => {
   try {
-    // Check window.process.env first (defined in index.html)
     const win = window as any;
-    if (win.process?.env?.[key]) return win.process.env[key];
+    // Priority: 1. window.process.env (defined in index.html) 2. import.meta.env 3. fallback
+    let val = (win.process?.env?.[key]) || (import.meta as any).env?.[key] || fallback;
     
-    // Check import.meta.env as fallback for local dev
-    const metaEnv = (import.meta as any).env;
-    if (metaEnv && metaEnv[key]) return metaEnv[key];
+    // Safety check: Ensure we return a string and handle non-string types gracefully
+    if (typeof val !== 'string') {
+      val = String(val || fallback);
+    }
+    
+    // Ensure the value is not an empty string or 'undefined' string
+    if (!val || val === 'undefined' || val === 'null') {
+      return fallback;
+    }
+    
+    return val;
   } catch (e) {
-    // Silent fail
+    return fallback;
   }
-  return fallback;
+};
+
+// Ensure address is a valid 0x string to prevent .trim() failures in viem/wagmi
+const ensureAddress = (addr: string, fallback: string): `0x${string}` => {
+  const clean = String(addr || fallback).trim();
+  if (clean.startsWith('0x')) return clean as `0x${string}`;
+  return `0x${clean}` as `0x${string}`;
 };
 
 export const ADRS = {
-  nft: getEnv("VITE_NFT_ADDRESS", "0x5FbDB2315678afecb367f032d93F642f64180aa3") as `0x${string}`,
-  marketplace: getEnv("VITE_MARKETPLACE_ADDRESS", "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9") as `0x${string}`,
-  staking: getEnv("VITE_STAKING_ADDRESS", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8") as `0x${string}`,
-  token: getEnv("VITE_TOKEN_ADDRESS", "0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9") as `0x${string}`, 
-  miner: getEnv("VITE_MINER_ADDRESS", "0x8Da6Eb1cd5c0C8cf84bD522AB7c11747DB1128C9") as `0x${string}`,
+  nft: ensureAddress(getEnv("VITE_NFT_ADDRESS", "0x5FbDB2315678afecb367f032d93F642f64180aa3"), "0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+  marketplace: ensureAddress(getEnv("VITE_MARKETPLACE_ADDRESS", "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"), "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"),
+  staking: ensureAddress(getEnv("VITE_STAKING_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"), "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"),
+  token: ensureAddress(getEnv("VITE_TOKEN_ADDRESS", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"), "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"), 
+  miner: ensureAddress(getEnv("VITE_MINER_ADDRESS", "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"), "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"),
 };
 
 export const MINIMAL_ERC20_ABI = [
@@ -33,6 +47,7 @@ export const MINIMAL_ERC20_ABI = [
   { name: 'transfer', type: 'function', inputs: [{ name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ type: 'bool' }], stateMutability: 'nonpayable' },
   { name: 'decimals', type: 'function', inputs: [], outputs: [{ type: 'uint8' }], stateMutability: 'view' },
   { name: 'symbol', type: 'function', inputs: [], outputs: [{ type: 'string' }], stateMutability: 'view' },
+  { name: 'allowance', type: 'function', inputs: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const;
 
 export const MINIMAL_NFT_ABI = [

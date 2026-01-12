@@ -1,38 +1,10 @@
 
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-      },
-      plugins: [react()],
-      define: {
-        'process.env.VITE_API_KEY': JSON.stringify(env.API_KEY),
-      },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'esbuild',
-    chunkSizeWarningLimit: 2000,
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-web3': ['wagmi', 'viem', '@wagmi/core', '@tanstack/react-query'],
-          'vendor-ui': ['framer-motion', 'lucide-react', 'canvas-confetti'],
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei']
-              }
-           }
-        }
-    });
+export default defineConfig({
+  test: {
+    environment: 'node',
+    globals: true,
+    include: ['tests/**/*.test.ts'],
+  },
+});

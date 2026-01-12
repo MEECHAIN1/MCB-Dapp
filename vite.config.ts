@@ -1,26 +1,40 @@
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-  return {
-    plugins: [react()],
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./"),
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    strictPort: true,
+    allowedHosts: true
+  },
+  define: {
+    // Injects the API_KEY from the build environment (Vercel/Netlify Secrets)
+    // into the bundled code as process.env.API_KEY
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || process.env.VITE_API_KEY || ''),
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    chunkSizeWarningLimit: 1000,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
       },
     },
-    server: {
-      port: 3000,
-      strictPort: false,
-      host: true,
-      allowedHosts: true,
-    },
-    define: {
-      'import.meta.env.VIET_API_KEY': JSON.stringify(env.VITE_API_KEY || ""),
-      'global': 'globalThis',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-web3': ['wagmi', 'viem', '@wagmi/core', '@tanstack/react-query'],
+          'vendor-ui': ['framer-motion', 'lucide-react', 'canvas-confetti'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei']
+        }
+      }
     }
-  };
+  },
 });

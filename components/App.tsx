@@ -1,25 +1,21 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { WagmiProvider, useAccount, useChainId } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { config } from './lib/wagmiConfig';
-import { StatusOverlay } from './components/StatusOverlay';
-import { Navbar } from './components/Navbar';
-import { RitualOracle } from './components/RitualOracle';
-import { StartupLoader } from './components/StartupLoader';
-import DashboardPage from './pages/DashboardPage';
-import StakingPage from './pages/StakingPage';
-import GalleryPage from './pages/GalleryPage';
-import EventLogPage from './pages/EventLogPage';
-import MarketplacePage from './pages/MarketplacePage';
-import MintPage from './pages/MintPage';
-import MiningPage from './pages/MiningPage';
+import { config } from '../lib/wagmiConfig';
+import { StatusOverlay } from './StatusOverlay';
+import { Navbar } from './Navbar';
+import { RitualOracle } from './RitualOracle';
+import { StartupLoader } from './StartupLoader';
+import DashboardPage from '../pages/DashboardPage';
+import StakingPage from '../pages/StakingPage';
+import GalleryPage from '../pages/GalleryPage';
+import EventLogPage from '../pages/EventLogPage';
+import MarketplacePage from '../pages/MarketplacePage';
+import MintPage from '../pages/MintPage';
+import MiningPage from '../pages/MiningPage';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useAppState } from './context/useAppState';
+import { useAppState } from '../context/useAppState';
 import { AnimatePresence, motion } from 'framer-motion';
-
-  useEffect(() => {
-    reset();
-  }, [pathname, reset]);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +36,10 @@ const GlobalManager: React.FC = () => {
     const win = window as any;
     return Number(win.process?.env?.VITE_CHAIN_ID || 56);
   }, []);
+
+  useEffect(() => {
+    reset();
+  }, [pathname, reset]);
 
   useEffect(() => {
     if (isConnected && currentChainId !== targetChainId) {
@@ -74,7 +74,7 @@ const App: React.FC = () => {
             {isAppLoaded && (
               <>
                 <Navbar />
-                <main className="pt-24 pb-12 max-w-7xl mx-auto px-6">
+                <main className="pt-24 pb-28 lg:pb-12 max-w-7xl mx-auto px-6">
                   <Routes>
                     <Route path="/" element={<DashboardPage />} />
                     <Route path="/mint" element={<MintPage />} />

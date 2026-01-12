@@ -1,39 +1,46 @@
 import { createConfig, http } from 'wagmi';
-import { localhost } from 'viem/chains';
-import { injected } from 'wagmi/connectors';
+import { bsc } from 'viem/chains';
+import { injected, walletConnect } from 'wagmi/connectors';
 
 // Safely access environment variables from the window.process.env initialized in index.html
 const getEnvValue = (key: string, fallback: string): string => {
   try {
     const win = window as any;
-    if (win.process?.env?.[key]) return win.process.env[key];
-  } catch (e) {}
-  return fallback;
+    let val = (win.process?.env?.[key]) || fallback;
+    if (typeof val !== 'string') val = String(val || fallback);
+    return val || fallback;
+  } catch (e) {
+    return fallback;
+  }
 };
 
-const chainId = Number(getEnvValue('VITE_CHAIN_ID', '56'));
-const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://bscscan.com');
+// Strict parsing for chain ID and URLs
+const chainId = parseInt(getEnvValue('VITE_CHAIN_ID', '56'), 10) || 56;
+const rpcUrl = getEnvValue('VITE_RPC_URL', 'https://dimensional-newest-film.bsc.quiknode.pro/8296e7105d470d5d73b51b19556495493c8f1033');
+const explorerUrl = getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com');
+const chainName = getEnvValue('VITE_CHAIN_NAME', 'BSC Ritual Node');
+const walletConnectProjectId = getEnvValue('VITE_WALLETCONNECT_PROJECT_ID', '3a8170812b1a5e812d8a9e73950f1406');
 
-const meeChain = {
-  ...localhost,
+const targetChain = {
+  ...bsc,
   id: chainId,
-  name: getEnvValue('VITE_CHAIN_NAME', 'BCS'),
-  nativeCurrency: { name: 'MeeChain', symbol: 'MCB', decimals: 18 },
+  name: chainName,
   rpcUrls: {
     default: { http: [rpcUrl] },
     public: { http: [rpcUrl] },
   },
   blockExplorers: {
-    default: { name: 'BcsScan', url: getEnvValue('VITE_EXPLORER_URL', 'https://bscscan.com') },
+    default: { name: 'BscScan', url: explorerUrl },
   },
 };
 
 export const config = createConfig({
-  chains: [meeChain],
+  chains: [targetChain],
   connectors: [
     injected(),
+    ...(walletConnectProjectId ? [walletConnect({ projectId: walletConnectProjectId })] : []),
   ],
   transports: {
-    [meeChain.id]: http(rpcUrl),
+    [targetChain.id]: http(rpcUrl),
   },
 });

@@ -12,7 +12,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/meechain1/meechain-meebot-dapp.git
+   git clone https://github.com/ritualchain/meechain-meebot-dapp.git
    cd meechain-meebot-dapp
    ```
 

@@ -28,7 +28,8 @@ interface AppState {
 
 const getTargetChainId = () => {
   const win = window as any;
-  return Number(win.process?.env?.VITE_CHAIN_ID || 1337);
+  const id = parseInt(win.process?.env?.VITE_CHAIN_ID || '1337', 10);
+  return isNaN(id) ? 1337 : id;
 };
 
 export const useAppState = create<AppState>()(
@@ -60,26 +61,35 @@ export const useAppState = create<AppState>()(
             const mainId = (config as any).state?.main?.id;
             const account = connections?.get(mainId)?.accounts?.[0];
 
-            if (account) {
-              const gasCheck = await canAffordGas({ 
-                from: account, 
-                to: options.to, 
-                data: options.data, 
-                value: options.value 
-              });
-              
-              if (!gasCheck.ok) {
-                const needed = formatUnits(gasCheck.required, 18);
-                const has = formatUnits(gasCheck.balance, 18);
-                throw new Error(language === 'EN' 
-                  ? `Insufficient MCB for Ritual. Needed: ${needed}, Have: ${has}` 
-                  : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, มี: ${has}`
-                );
+            // Only run gas check if account is definitively identified
+            if (account && typeof account === 'string' && account.startsWith('0x')) {
+              try {
+                const gasCheck = await canAffordGas({ 
+                  from: account, 
+                  to: options.to, 
+                  data: options.data, 
+                  value: options.value 
+                });
+                
+                if (!gasCheck.ok) {
+                  const needed = formatUnits(gasCheck.required, 18);
+                  const has = formatUnits(gasCheck.balance, 18);
+                  throw new Error(language === 'EN' 
+                    ? `Insufficient MCB for Ritual. Needed: ${needed}, Have: ${has}` 
+                    : `MCB ไม่เพียงพอสำหรับพิธีกรรม ต้องการ: ${needed}, มี: ${has}`
+                  );
+                }
+              } catch (gasErr) {
+                console.warn("Gas pre-flight failed (ignoring):", gasErr);
               }
             }
           }
 
           const hash = await action();
+          if (!hash || typeof hash !== 'string') {
+            throw new Error("Invalid transaction hash received from ritual.");
+          }
+          
           set({ txHash: hash });
           await waitForTransactionReceipt(config, { hash });
           triggerSuccess();
@@ -115,7 +125,7 @@ export const useAppState = create<AppState>()(
       reset: () => set({ isLoading: false, error: null, txHash: null, ritualSuccess: false }),
     }),
     {
-      name: 'meebot-ritual-state-v2',
+      name: 'meebot-ritual-state-v3', // Incremented version to clear potentially stale state
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ txHash: state.txHash, language: state.language }),
     }

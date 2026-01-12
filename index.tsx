@@ -1,44 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Buffer } from 'buffer';
-import App from './App';
+import App from './components/App';
 
-/**
- * MeeChain Terminal Initialization Sequence
- * Standard ESM bootstrapper for direct browser execution.
- */
-
-// Critical polyfills for Web3 libraries - ensure they are attached to window
-(window as any).Buffer = Buffer;
-(window as any).global = window;
+// Senior Engineer: Global boot confirmation for debugging nexus resolution
+console.log("%c📡 NEXUS BOOT PROTOCOL INITIATED", "color: #C5A059; font-weight: bold; font-size: 12px;");
 
 const handleFatalError = (error: any) => {
-  console.error('Terminal Initialization Failure:', error);
+  console.error('Nexus Boot Failure:', error);
   const root = document.getElementById('root');
   if (root) {
+    const msg = error?.message || error?.reason || (typeof error === 'string' ? error : 'ไม่สามารถโหลดแอปได้');
+    const stack = error?.stack || '';
+    
     root.innerHTML = `
       <div style="background: #050505; color: #ff5555; padding: 40px; font-family: 'JetBrains Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 20px;">⚡</div>
-        <h2 style="color: #fff; margin-bottom: 10px; letter-spacing: 0.1em;">RITUAL INTERRUPTED</h2>
-        <p style="color: #666; max-width: 500px; font-size: 13px; line-height: 1.6;">The dimensional bridge could not be established. A fatal protocol error occurred during initialization.</p>
-        <div style="background: #111; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: left; width: 100%; max-width: 700px; overflow: auto; border: 1px solid #222;">
-          <code style="color: #ff5555; font-size: 11px; white-space: pre-wrap;">${error?.message || String(error)}</code>
+        <div style="font-size: 48px; margin-bottom: 24px;">⚡</div>
+        <h2 style="color: #fff; margin-bottom: 12px; letter-spacing: 0.2em; font-weight: 900;">RITUAL INTERRUPTED</h2>
+        <p style="color: #888; max-width: 500px; font-size: 14px; line-height: 1.8; text-transform: uppercase; letter-spacing: 0.1em;">ไม่สามารถโหลดแอปได้ โปรดลองโหลดแอปใหม่อีกครั้ง</p>
+        <div style="background: #111; padding: 24px; border-radius: 16px; margin: 32px 0; text-align: left; width: 100%; max-width: 700px; overflow: auto; border: 1px solid #222;">
+          <code style="color: #ff5555; font-size: 11px; white-space: pre-wrap;">${msg}${stack ? '\n\n' + stack : ''}</code>
         </div>
-        <button onclick="window.location.reload()" style="background: #C5A059; color: #000; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; box-shadow: 0 0 20px rgba(197,160,89,0.2);">Retry Connection</button>
+        <button onclick="window.location.reload()" style="background: #C5A059; color: #000; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em;">เชื่อมต่อใหม่</button>
       </div>
     `;
   }
 };
 
 const boot = () => {
-  console.log("Nexus Boot Sequence Initiated...");
   try {
     const rootEl = document.getElementById('root');
-    if (!rootEl) throw new Error("Terminal Root (DOM #root) not found");
+    if (!rootEl) return;
     
-    // Explicitly check for framework readiness
-    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-      throw new Error("Framework parity failure: React modules not resolved by ESM loader.");
+    if (!React || !ReactDOM) {
+      throw new Error("Nexus Framework Parity Failure: Modules not resolved.");
     }
 
     const root = ReactDOM.createRoot(rootEl);
@@ -47,23 +41,24 @@ const boot = () => {
         <App />
       </React.StrictMode>
     );
-    
-    console.log("Nexus UI Thread Manifested.");
+    console.log("%c✅ NEXUS MANIFESTED", "color: #22c55e; font-weight: bold;");
   } catch (err) {
     handleFatalError(err);
   }
 };
 
-// Listen for global unhandled module errors (like 404s in importmap)
-window.addEventListener('error', (event) => {
-  if (event.message.includes('Script error') || event.message.includes('import')) {
-    handleFatalError(new Error("Module resolution failed. Check the network tab for 404 errors in dependency resolution."));
-  }
-});
-
-// Use immediate execution or DOM check
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot);
 } else {
   boot();
 }
+
+window.addEventListener('error', (event) => {
+  if (event.filename && event.filename.includes('index.tsx')) {
+    handleFatalError(event.error);
+  }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  handleFatalError(event.reason || new Error("Unhandled promise rejection"));
+});
